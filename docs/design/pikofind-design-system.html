@@ -1,0 +1,783 @@
+<title>PikoFind — Design System</title>
+<style>
+  :root{
+    --cream:#FFF8E7; --navy:#26324A; --white:#FFFFFF; --grey:#D9E4EA;
+    --sky:#43C6E8; --yellow:#FFD84D; --coral:#FF7A6B; --mint:#6FD6A8; --purple:#9B7EDE;
+    /* object-illustration hues (not UI) */
+    --brown:#C68A52; --pink:#F4A0BE; --red:#EF5B5B; --leaf:#5FBE86;
+    /* piko */
+    --teal:#37BFD0; --teal-d:#289FAF; --belly:#D6F5FA;
+    /* chosen neutrals — cream-biased, not pure grey */
+    --paper:#FFFDF6; --line:#EBE3CE; --ink-soft:#5A667C;
+    --font:'Nunito','Nunito Sans',ui-rounded,'SF Pro Rounded','Segoe UI Rounded','Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+    --r-xl:34px; --r-lg:26px; --r-md:18px; --r-sm:12px; --pill:999px;
+    --stroke:3px; --stroke-hair:2px;
+    --shadow:0 10px 0 rgba(38,50,74,.06), 0 18px 34px -18px rgba(38,50,74,.34);
+    --shadow-sm:0 6px 0 rgba(38,50,74,.05), 0 10px 20px -14px rgba(38,50,74,.35);
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; font-family:var(--font); color:var(--navy);
+    background:
+      radial-gradient(38rem 26rem at 88% -8%, rgba(67,198,232,.16), transparent 60%),
+      radial-gradient(34rem 24rem at -8% 12%, rgba(155,126,222,.14), transparent 60%),
+      radial-gradient(40rem 30rem at 50% 118%, rgba(111,214,168,.14), transparent 60%),
+      var(--cream);
+    line-height:1.5; letter-spacing:.1px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 clamp(16px,4vw,40px)}
+  a{color:var(--sky); text-decoration:none}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky; top:0; z-index:40; backdrop-filter:blur(8px);
+    background:rgba(255,248,231,.82); border-bottom:2px solid var(--line)}
+  .topbar .row{display:flex; align-items:center; gap:14px; padding:12px 0}
+  .brandmark{display:flex; align-items:center; gap:12px; font-weight:900}
+  .brandmark svg{width:40px;height:40px;flex:0 0 auto}
+  .wm{font-weight:900; font-size:1.5rem; letter-spacing:-.5px}
+  .wm b{color:var(--navy)} .wm i{color:var(--sky); font-style:normal}
+  .chips{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .chip{font-size:.72rem; font-weight:800; padding:5px 11px; border-radius:var(--pill);
+    background:var(--white); border:2px solid var(--line); color:var(--navy); white-space:nowrap}
+
+  /* ---------- section scaffolding ---------- */
+  section{padding:clamp(46px,7vw,86px) 0 0}
+  .kicker{display:inline-flex; align-items:center; gap:8px; font-size:.74rem; font-weight:900;
+    letter-spacing:1.6px; text-transform:uppercase; color:var(--purple);
+    background:rgba(155,126,222,.12); border:2px solid rgba(155,126,222,.28);
+    padding:6px 12px; border-radius:var(--pill)}
+  h2{font-size:clamp(1.7rem,3.4vw,2.5rem); font-weight:900; letter-spacing:-.6px; margin:.5rem 0 .3rem; text-wrap:balance}
+  .lede{font-size:clamp(1rem,1.6vw,1.14rem); color:var(--ink-soft); max-width:60ch; font-weight:600}
+  h3{font-size:1.05rem; font-weight:900; margin:0 0 .2rem}
+
+  .card{background:var(--paper); border:var(--stroke) solid var(--navy);
+    border-radius:var(--r-lg); box-shadow:var(--shadow); padding:clamp(18px,2.4vw,28px)}
+  .soft{border:2px solid var(--line); box-shadow:var(--shadow-sm)}
+
+  /* ---------- hero ---------- */
+  .hero{display:grid; grid-template-columns:1.15fr .85fr; gap:34px; align-items:center}
+  .hero-tag{font-weight:900; color:var(--coral); letter-spacing:.3px; font-size:1.05rem}
+  .hero h1{font-size:clamp(2.6rem,6vw,4.4rem); line-height:.98; letter-spacing:-2px; margin:.35rem 0 .5rem; font-weight:900}
+  .hero h1 i{font-style:normal; color:var(--sky)}
+  .hero p{font-size:1.08rem; color:var(--ink-soft); font-weight:600; max-width:46ch}
+  .hero-stage{position:relative; min-height:340px; display:grid; place-items:center}
+  .stage-ring{position:absolute; inset:8% 6%; border-radius:46% 54% 52% 48%/54% 46% 54% 46%;
+    background:radial-gradient(circle at 40% 34%, #fff, rgba(255,255,255,0) 70%),
+      linear-gradient(150deg, rgba(67,198,232,.28), rgba(155,126,222,.22));
+    border:3px solid var(--navy); box-shadow:var(--shadow)}
+  #heroPiko{width:min(74%,300px); position:relative; z-index:2; filter:drop-shadow(0 16px 18px rgba(38,50,74,.22))}
+  .hero-bubble{position:absolute; z-index:3; top:8%; right:2%; background:var(--white);
+    border:3px solid var(--navy); border-radius:20px 20px 20px 6px; padding:10px 14px; font-weight:800;
+    box-shadow:var(--shadow-sm); font-size:.92rem; max-width:56%}
+  .hero-bubble small{display:block; color:var(--purple); font-weight:900; font-size:.66rem; letter-spacing:1px; text-transform:uppercase}
+
+  /* ---------- principles ---------- */
+  .grid{display:grid; gap:18px}
+  .cols-5{grid-template-columns:repeat(5,1fr)}
+  .cols-4{grid-template-columns:repeat(4,1fr)}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  .principle{display:flex; flex-direction:column; gap:8px}
+  .glyph{width:46px;height:46px;border-radius:14px; display:grid;place-items:center; border:3px solid var(--navy); color:var(--navy)}
+  .glyph svg{width:24px;height:24px}
+  .principle p{margin:0; font-size:.9rem; color:var(--ink-soft); font-weight:600}
+
+  /* ---------- colour ---------- */
+  .swatches{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  .sw{border-radius:var(--r-md); overflow:hidden; border:3px solid var(--navy); box-shadow:var(--shadow-sm); background:var(--white)}
+  .sw .chipface{height:78px; display:flex; align-items:flex-end; padding:8px 10px}
+  .sw .meta{padding:9px 11px 11px}
+  .sw .nm{font-weight:900; font-size:.9rem}
+  .sw .hex{font-family:var(--mono); font-size:.74rem; color:var(--ink-soft); letter-spacing:.3px; font-variant-numeric:tabular-nums}
+  .sw .use{font-size:.72rem; color:var(--ink-soft); font-weight:700; margin-top:3px}
+  .sw .tagd{font-size:.6rem; font-weight:900; color:#fff; background:rgba(38,50,74,.55); padding:2px 7px; border-radius:var(--pill)}
+  .rulebox{margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:10px 26px}
+  .rulebox p{margin:0; font-size:.86rem; font-weight:600; color:var(--navy); display:flex; gap:9px; align-items:flex-start}
+  .rulebox .yes{color:var(--mint)} .rulebox .no{color:var(--coral)}
+  .rulebox b{font-weight:900}
+
+  /* ---------- typography ---------- */
+  .typo-row{display:flex; align-items:baseline; gap:16px; padding:14px 0; border-bottom:2px dashed var(--line); flex-wrap:wrap}
+  .typo-row:last-child{border-bottom:0}
+  .typo-label{font-family:var(--mono); font-size:.72rem; color:var(--purple); font-weight:800; width:150px; flex:0 0 auto; letter-spacing:.3px}
+  .t-btn{font-size:30px; font-weight:900}
+  .t-inst{font-size:26px; font-weight:800}
+  .t-body{font-size:17px; font-weight:600}
+  .t-parent{font-size:18px; font-weight:700}
+  .t-cap{font-size:12px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--ink-soft)}
+  .weights{display:flex; gap:22px; flex-wrap:wrap; margin-top:6px}
+  .weights span{font-size:1.5rem}
+  .w6{font-weight:600}.w7{font-weight:700}.w8{font-weight:800}.w9{font-weight:900}
+  .note{font-size:.82rem; color:var(--ink-soft); font-weight:600; margin-top:14px; padding:10px 14px;
+    background:rgba(67,198,232,.09); border:2px solid rgba(67,198,232,.3); border-radius:var(--r-sm)}
+
+  /* ---------- mascot poses ---------- */
+  .poses{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  .pose{position:relative; background:var(--white); border:3px solid var(--navy); border-radius:var(--r-md);
+    box-shadow:var(--shadow-sm); aspect-ratio:1/1; display:grid; place-items:center; overflow:hidden}
+  .pose svg.piko{width:74%}
+  .pose .plabel{position:absolute; left:0; right:0; bottom:0; text-align:center; font-size:.72rem; font-weight:900;
+    background:var(--cream); border-top:2px solid var(--line); padding:4px 2px}
+  .pose .decor{position:absolute; font-weight:900; color:var(--purple)}
+  .personality{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px}
+  .trait{font-size:.8rem; font-weight:800; padding:6px 12px; border-radius:var(--pill); background:rgba(111,214,168,.16); border:2px solid rgba(111,214,168,.4)}
+
+  /* ---------- components ---------- */
+  .comp-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+  .comp{display:flex; flex-direction:column; gap:14px}
+  .comp .demo{display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding:18px; background:var(--cream);
+    border:2px dashed var(--line); border-radius:var(--r-md)}
+  .kidbtn{font-family:var(--font); font-weight:900; font-size:1.15rem; color:#fff; background:var(--coral);
+    border:3px solid var(--navy); border-radius:var(--pill); padding:14px 30px; cursor:pointer;
+    box-shadow:0 6px 0 var(--navy); transition:transform .08s, box-shadow .08s}
+  .kidbtn:hover{transform:translateY(-1px)}
+  .kidbtn:active{transform:translateY(4px); box-shadow:0 2px 0 var(--navy)}
+  .kidbtn.play{font-size:1.4rem; padding:18px 40px}
+  .kidbtn.sky{background:var(--sky)} .kidbtn.mint{background:var(--mint)} .kidbtn.purple{background:var(--purple)}
+  .kidbtn.ghost{background:var(--white); color:var(--navy); box-shadow:0 6px 0 var(--line)}
+  .kidbtn.disabled{background:var(--grey); color:#9aa7b4; border-color:#b7c4cd; box-shadow:0 6px 0 #c4d0d8; cursor:not-allowed}
+  .iconbtn{width:60px;height:60px;border-radius:50%; border:3px solid var(--navy); background:var(--white);
+    display:grid;place-items:center; cursor:pointer; box-shadow:0 5px 0 var(--navy); color:var(--navy)}
+  .iconbtn svg{width:26px;height:26px}
+  .iconbtn.on{background:var(--yellow)} .iconbtn.coral{background:var(--coral); color:#fff}
+  .dots{display:flex; gap:12px; align-items:center}
+  .dot{width:20px;height:20px;border-radius:50%; border:3px solid var(--navy); background:var(--white)}
+  .dot.done{background:var(--mint)} .dot.now{background:var(--yellow); transform:scale(1.25)}
+  .stickerbadge{width:96px;height:96px;border-radius:22px; background:var(--yellow); border:3px solid var(--navy);
+    display:grid;place-items:center; box-shadow:var(--shadow-sm); transform:rotate(-6deg)}
+  .stickerbadge.locked{background:var(--grey)}
+  .stickerbadge svg{width:56px;height:56px}
+  .stickerbadge.locked svg{opacity:.28; filter:grayscale(1)}
+  .tt{margin-top:14px; font-size:.82rem; font-weight:700; color:var(--navy);
+    display:flex; gap:10px; align-items:center; background:rgba(255,216,77,.14);
+    border:2px solid rgba(255,216,77,.5); border-radius:var(--r-sm); padding:10px 14px}
+  .tt .k{font-family:var(--mono); font-weight:900; background:var(--navy); color:#fff; padding:2px 8px; border-radius:6px; font-size:.72rem}
+
+  /* ---------- screens / device board ---------- */
+  .flowlabel{display:flex; align-items:center; gap:12px; margin:26px 0 14px; font-weight:900; font-size:1.1rem}
+  .flowlabel .ln{height:3px; flex:1; background:var(--line); border-radius:2px}
+  .screens{display:grid; grid-template-columns:repeat(2,1fr); gap:22px}
+  figure.screen{margin:0}
+  .device{position:relative; width:100%; aspect-ratio:16/9; border-radius:22px; overflow:hidden;
+    border:4px solid var(--navy); box-shadow:var(--shadow); background:var(--cream)}
+  .device .safe{position:absolute; inset:0}
+  figcaption{margin-top:9px; font-weight:800; font-size:.9rem}
+  figcaption small{display:block; font-weight:600; color:var(--ink-soft); font-size:.78rem}
+  /* scene grounds */
+  .sc-play{background:linear-gradient(180deg,#BDEBF4 0%, #E8F8FC 58%, #F6E7C8 58%, #F1DCB4 100%)}
+  .sc-garden{background:linear-gradient(180deg,#BFE9F6 0%, #DFF6EA 55%, #BFE6B4 55%, #A9DCA0 100%)}
+  .sc-class{background:linear-gradient(180deg,#E7DCF7 0%, #F0E9FA 55%, #E9D7BE 55%, #DFC9A6 100%)}
+  .sc-cream{background:var(--cream)}
+  .sc-sky{background:linear-gradient(160deg,#59CDEC,#43C6E8)}
+  /* in-scene atoms (positioned with normalized % — dogfooding 0..1 coords) */
+  .obj{position:absolute; transform:translate(-50%,-50%)}
+  .obj svg{width:100%;height:100%; display:block; filter:drop-shadow(0 3px 3px rgba(38,50,74,.18))}
+  .miniPiko{position:absolute; transform:translate(-50%,-50%)}
+  .miniPiko svg{width:100%}
+  .ibubble{position:absolute; background:#fff; border:3px solid var(--navy); border-radius:14px 14px 14px 4px;
+    padding:6px 10px; font-weight:800; font-size:clamp(9px,1.5vw,13px); box-shadow:var(--shadow-sm); line-height:1.15}
+  .dbar{position:absolute; display:flex; gap:6px; align-items:center}
+  .ddot{width:10px;height:10px;border-radius:50%;border:2px solid var(--navy);background:#fff}
+  .ddot.done{background:var(--mint)} .ddot.now{background:var(--yellow)}
+  .dbtn{position:absolute; font-weight:900; color:#fff; background:var(--coral); border:3px solid var(--navy);
+    border-radius:var(--pill); padding:6px 16px; font-size:clamp(9px,1.6vw,14px); box-shadow:0 4px 0 var(--navy)}
+  .dbtn.sky{background:var(--sky)} .dbtn.mint{background:var(--mint)} .dbtn.ghost{background:#fff;color:var(--navy)}
+  .dicon{position:absolute; width:34px;height:34px;border-radius:50%;border:3px solid var(--navy);background:#fff;
+    display:grid;place-items:center; box-shadow:0 3px 0 var(--navy)}
+  .dicon svg{width:17px;height:17px}
+  .dcard{position:absolute; background:#fff; border:3px solid var(--navy); border-radius:16px; box-shadow:var(--shadow-sm)}
+  .dwm{position:absolute; font-weight:900; letter-spacing:-1px; color:var(--navy)}
+  .dwm i{font-style:normal;color:var(--sky)}
+  .worldcard{position:absolute; border:3px solid var(--navy); border-radius:16px; box-shadow:var(--shadow-sm); overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:6px}
+  .worldcard .cap{font-weight:900; font-size:clamp(8px,1.4vw,12px); background:#fff; width:100%; text-align:center; border-top:2px solid var(--navy); padding:3px 0}
+  .lockpill{position:absolute; top:6px; right:6px; background:var(--white); border:2px solid var(--navy); border-radius:var(--pill);
+    width:22px;height:22px; display:grid;place-items:center}
+  .lockpill svg{width:12px;height:12px}
+  .star-emph{position:absolute; color:var(--yellow); filter:drop-shadow(0 2px 0 var(--navy))}
+  .halo{position:absolute; border-radius:50%; border:4px dashed var(--mint)}
+  .wiggle-mark{position:absolute; color:var(--purple); font-weight:900}
+  .gate-eq{position:absolute; background:#fff;border:3px solid var(--navy); border-radius:12px; font-weight:900;
+    display:grid;place-items:center; color:var(--navy)}
+  .keypad{position:absolute; display:grid; grid-template-columns:repeat(3,1fr); gap:5px}
+  .key{background:#fff;border:2px solid var(--navy);border-radius:8px; display:grid;place-items:center;
+    font-weight:900; font-size:clamp(8px,1.4vw,12px); aspect-ratio:1.4/1}
+  .setrow{position:absolute; display:flex; align-items:center; justify-content:space-between;
+    background:#fff;border:2px solid var(--navy); border-radius:10px; padding:4px 8px; font-weight:800; font-size:clamp(8px,1.3vw,11px)}
+  .toggle{width:30px;height:16px;border-radius:var(--pill); border:2px solid var(--navy); position:relative; background:var(--mint)}
+  .toggle::after{content:"";position:absolute; width:11px;height:11px;border-radius:50%; background:#fff; border:2px solid var(--navy); top:0; right:0}
+  .toggle.off{background:var(--grey)} .toggle.off::after{right:auto;left:0}
+
+  /* ---------- layout / responsive ---------- */
+  .safebox{position:relative; aspect-ratio:16/9; border:3px solid var(--navy); border-radius:16px; background:var(--white); overflow:hidden}
+  .safebox .letterbar{position:absolute; top:0;bottom:0; width:8%; background:repeating-linear-gradient(45deg,#EEE6D2,#EEE6D2 8px,#F6EFDD 8px,#F6EFDD 16px)}
+  .safebox .letterbar.l{left:0} .safebox .letterbar.r{right:0}
+  .safebox .inner{position:absolute; inset:8% 12%; border:3px dashed var(--mint); border-radius:12px; display:grid;place-items:center;
+    font-weight:900; color:var(--mint); font-size:.9rem}
+  .coordbox{font-family:var(--mono); font-size:.82rem; background:var(--navy); color:#EAF6FF; padding:14px 16px; border-radius:var(--r-md); overflow-x:auto}
+  .coordbox .k{color:var(--yellow)} .coordbox .n{color:var(--mint)}
+
+  /* ---------- assets ---------- */
+  .objset{display:grid; grid-template-columns:repeat(7,1fr); gap:12px}
+  .objtile{background:#fff;border:3px solid var(--navy);border-radius:16px; box-shadow:var(--shadow-sm); padding:12px 6px 6px;
+    display:flex; flex-direction:column; align-items:center; gap:6px}
+  .objtile svg{width:46px;height:46px}
+  .objtile span{font-size:.66rem; font-weight:800; color:var(--ink-soft)}
+  table.asset{width:100%; border-collapse:collapse; font-size:.86rem}
+  table.asset th,table.asset td{text-align:left; padding:9px 12px; border-bottom:2px solid var(--line)}
+  table.asset th{font-weight:900; font-size:.72rem; letter-spacing:.6px; text-transform:uppercase; color:var(--purple)}
+  table.asset td.k{font-family:var(--mono); color:var(--navy); font-weight:700}
+  .fnames{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .fnames code{font-family:var(--mono); font-size:.74rem; background:var(--cream); border:2px solid var(--line);
+    padding:4px 9px; border-radius:8px; color:var(--navy)}
+
+  footer{padding:60px 0 80px; margin-top:60px; text-align:center; color:var(--ink-soft)}
+  footer .wm{font-size:1.2rem}
+  footer p{font-size:.84rem; font-weight:600; max-width:52ch; margin:12px auto 0}
+
+  @media (max-width:880px){
+    .hero{grid-template-columns:1fr} .hero-stage{order:-1; min-height:280px}
+    .cols-5,.cols-4,.swatches,.poses{grid-template-columns:repeat(2,1fr)}
+    .comp-grid,.screens,.cols-3,.cols-2,.rulebox{grid-template-columns:1fr}
+    .objset{grid-template-columns:repeat(4,1fr)}
+    .chips{display:none}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    #heroPiko{animation:bob 4s ease-in-out infinite}
+    @keyframes bob{50%{transform:translateY(-10px) rotate(-1.5deg)}}
+    .stickerbadge{animation:sway 5s ease-in-out infinite}
+    @keyframes sway{50%{transform:rotate(4deg)}}
+  }
+  :focus-visible{outline:3px solid var(--purple); outline-offset:3px; border-radius:6px}
+</style>
+
+<!-- ============ PIKO TEMPLATE (cloned by JS) ============ -->
+<template id="pikoTpl">
+<svg class="piko" viewBox="0 0 220 232" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <g class="pk-root" stroke="#26324A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- tail -->
+    <g class="pk-tail" fill="#37BFD0">
+      <path d="M84 196 q-6 26 6 30 q10 -6 12 -26 Z"/>
+      <path d="M110 200 q0 28 0 30 q10 -4 12 -26 Z" fill="#289FAF"/>
+      <path d="M136 196 q6 26 -6 30 q-10 -6 -12 -26 Z"/>
+    </g>
+    <!-- left wing (behind) -->
+    <g class="pk-wing pk-wing-l" style="transform-origin:64px 120px">
+      <ellipse cx="58" cy="132" rx="20" ry="36" fill="#FFD84D"/>
+      <path d="M58 108 v48" stroke-width="3" opacity=".5"/>
+    </g>
+    <!-- body -->
+    <ellipse class="pk-body" cx="110" cy="132" rx="62" ry="66" fill="#37BFD0"/>
+    <ellipse class="pk-belly" cx="110" cy="148" rx="40" ry="46" fill="#D6F5FA"/>
+    <!-- feet -->
+    <path d="M96 196 v10 M90 206 h12" stroke-width="5" stroke="#F0685A"/>
+    <path d="M124 196 v10 M118 206 h12" stroke-width="5" stroke="#F0685A"/>
+    <!-- right wing (front) -->
+    <g class="pk-wing pk-wing-r" style="transform-origin:162px 120px">
+      <ellipse cx="162" cy="132" rx="20" ry="36" fill="#FFD84D"/>
+      <path d="M162 108 v48" stroke-width="3" opacity=".5"/>
+    </g>
+    <!-- head -->
+    <circle class="pk-head" cx="110" cy="74" r="54" fill="#37BFD0"/>
+    <!-- tuft -->
+    <g class="pk-tuft">
+      <path d="M110 24 q-4 -18 6 -22 q6 8 2 22 Z" fill="#FF7A6B"/>
+      <path d="M96 26 q-10 -14 -2 -22 q10 6 10 20 Z" fill="#FFD84D"/>
+      <path d="M124 26 q10 -14 2 -22 q-10 6 -10 20 Z" fill="#FFD84D"/>
+    </g>
+    <!-- cheeks -->
+    <circle cx="80" cy="88" r="10" fill="#FF7A6B" opacity=".38" stroke="none"/>
+    <circle cx="140" cy="88" r="10" fill="#FF7A6B" opacity=".38" stroke="none"/>
+    <!-- eyes -->
+    <g class="pk-eyes">
+      <circle cx="92" cy="68" r="17" fill="#fff"/>
+      <circle cx="128" cy="68" r="17" fill="#fff"/>
+      <circle class="pk-pupil" cx="94" cy="70" r="8" fill="#26324A" stroke="none"/>
+      <circle class="pk-pupil" cx="130" cy="70" r="8" fill="#26324A" stroke="none"/>
+      <circle cx="90" cy="66" r="3" fill="#fff" stroke="none"/>
+      <circle cx="126" cy="66" r="3" fill="#fff" stroke="none"/>
+    </g>
+    <g class="pk-lids" style="display:none" fill="none">
+      <path d="M78 68 q14 12 28 0"/>
+      <path d="M114 68 q14 12 28 0"/>
+    </g>
+    <!-- beak -->
+    <g class="pk-beak-closed">
+      <path d="M97 86 q13 20 26 0 q-13 12 -26 0 Z" fill="#FF7A6B"/>
+    </g>
+    <g class="pk-beak-open" style="display:none">
+      <path d="M98 84 q12 8 24 0 q-12 6 -24 0 Z" fill="#F0685A"/>
+      <path d="M100 92 q10 12 20 0 q-10 6 -20 0 Z" fill="#FF9A8C"/>
+    </g>
+  </g>
+</svg>
+</template>
+
+<!-- object symbols -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="o-star"><path d="M50 6 61 38 95 38 67 58 78 92 50 71 22 92 33 58 5 38 39 38Z" fill="#FFD84D" stroke="#26324A" stroke-width="5" stroke-linejoin="round"/></g>
+  <g id="o-ball"><circle cx="50" cy="52" r="40" fill="#EF5B5B" stroke="#26324A" stroke-width="5"/><path d="M18 44 q32 -20 64 0" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M22 66 q28 14 56 0" fill="none" stroke="#26324A" stroke-width="4" opacity=".5"/></g>
+  <g id="o-car"><rect x="10" y="46" width="80" height="30" rx="12" fill="#43C6E8" stroke="#26324A" stroke-width="5"/><path d="M26 46 q8 -18 26 -18 q16 0 22 18Z" fill="#BDEBF4" stroke="#26324A" stroke-width="5"/><circle cx="30" cy="78" r="11" fill="#26324A"/><circle cx="70" cy="78" r="11" fill="#26324A"/></g>
+  <g id="o-teddy"><circle cx="30" cy="26" r="12" fill="#C68A52" stroke="#26324A" stroke-width="5"/><circle cx="70" cy="26" r="12" fill="#C68A52" stroke="#26324A" stroke-width="5"/><circle cx="50" cy="40" r="26" fill="#C68A52" stroke="#26324A" stroke-width="5"/><ellipse cx="50" cy="74" rx="30" ry="22" fill="#C68A52" stroke="#26324A" stroke-width="5"/><circle cx="50" cy="46" r="9" fill="#F3E0C6"/><circle cx="42" cy="36" r="3" fill="#26324A"/><circle cx="58" cy="36" r="3" fill="#26324A"/></g>
+  <g id="o-cup"><path d="M24 34 h44 l-5 44 a10 10 0 0 1 -10 9 h-14 a10 10 0 0 1 -10 -9Z" fill="#fff" stroke="#26324A" stroke-width="5"/><path d="M68 44 q16 0 14 16 q-2 12 -16 12" fill="none" stroke="#26324A" stroke-width="5"/><path d="M38 20 q4 8 0 12 M52 18 q4 8 0 12" fill="none" stroke="#9B7EDE" stroke-width="4" stroke-linecap="round"/></g>
+  <g id="o-apple"><path d="M50 30 q-26 -6 -30 24 q-3 30 30 38 q33 -8 30 -38 q-4 -30 -30 -24Z" fill="#EF5B5B" stroke="#26324A" stroke-width="5"/><path d="M50 30 q2 -14 16 -18 q-2 14 -16 18Z" fill="#5FBE86" stroke="#26324A" stroke-width="4"/><path d="M50 28 v-8" stroke="#26324A" stroke-width="4"/></g>
+  <g id="o-book"><rect x="16" y="22" width="68" height="56" rx="6" fill="#9B7EDE" stroke="#26324A" stroke-width="5"/><path d="M50 22 v56" stroke="#26324A" stroke-width="4"/><path d="M26 36 h14 M60 36 h14 M26 48 h14 M60 48 h14" stroke="#fff" stroke-width="3" opacity=".8"/></g>
+  <g id="o-flower"><circle cx="50" cy="50" r="12" fill="#FFD84D" stroke="#26324A" stroke-width="5"/><g fill="#F4A0BE" stroke="#26324A" stroke-width="5"><ellipse cx="50" cy="22" rx="11" ry="15"/><ellipse cx="50" cy="78" rx="11" ry="15"/><ellipse cx="22" cy="50" rx="15" ry="11"/><ellipse cx="78" cy="50" rx="15" ry="11"/></g><circle cx="50" cy="50" r="12" fill="#FFD84D" stroke="#26324A" stroke-width="5"/></g>
+  <g id="o-butterfly"><path d="M50 50 20 24 q-16 20 0 40Z" fill="#9B7EDE" stroke="#26324A" stroke-width="5"/><path d="M50 50 80 24 q16 20 0 40Z" fill="#6FD6A8" stroke="#26324A" stroke-width="5"/><rect x="47" y="26" width="6" height="48" rx="3" fill="#26324A"/><path d="M50 26 q-6 -12 -12 -14 M50 26 q6 -12 12 -14" fill="none" stroke="#26324A" stroke-width="4" stroke-linecap="round"/></g>
+  <g id="o-duck"><ellipse cx="46" cy="60" rx="34" ry="24" fill="#FFD84D" stroke="#26324A" stroke-width="5"/><circle cx="74" cy="40" r="17" fill="#FFD84D" stroke="#26324A" stroke-width="5"/><path d="M88 40 h16 q-2 8 -16 6Z" fill="#FF7A6B" stroke="#26324A" stroke-width="4"/><circle cx="78" cy="36" r="3" fill="#26324A"/></g>
+  <g id="o-block"><rect x="22" y="22" width="56" height="56" rx="10" fill="#6FD6A8" stroke="#26324A" stroke-width="5"/><text x="50" y="62" font-family="Nunito,sans-serif" font-size="34" font-weight="900" fill="#26324A" text-anchor="middle">A</text></g>
+  <g id="o-pencil"><rect x="20" y="42" width="52" height="16" rx="4" fill="#FFD84D" stroke="#26324A" stroke-width="5" transform="rotate(-20 46 50)"/><path d="M74 34 l14 4 -10 11Z" fill="#F4A0BE" stroke="#26324A" stroke-width="4" transform="rotate(-20 74 40)"/></g>
+  <g id="o-heart"><path d="M50 84 C18 60 20 30 40 30 q10 0 10 12 q0 -12 10 -12 c20 0 22 30 -10 54Z" fill="#FF7A6B" stroke="#26324A" stroke-width="5"/></g>
+  <g id="o-rainbow"><path d="M14 80 a36 36 0 0 1 72 0" fill="none" stroke="#FF7A6B" stroke-width="9"/><path d="M24 80 a26 26 0 0 1 52 0" fill="none" stroke="#FFD84D" stroke-width="9"/><path d="M34 80 a16 16 0 0 1 32 0" fill="none" stroke="#6FD6A8" stroke-width="9"/></g>
+  <!-- ui icons -->
+  <g id="i-sound"><path d="M14 38 h14 l16 -14 v52 l-16 -14 H14Z" fill="currentColor"/><path d="M56 34 q12 16 0 32 M64 26 q22 24 0 48" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></g>
+  <g id="i-replay"><path d="M74 30 v18 h-18" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M72 44 a26 26 0 1 0 6 22" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></g>
+  <g id="i-back"><path d="M58 24 34 50 58 76" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="i-parent"><circle cx="50" cy="36" r="14" fill="currentColor"/><path d="M24 82 q0 -26 26 -26 q26 0 26 26Z" fill="currentColor"/></g>
+  <g id="i-lock"><rect x="26" y="46" width="48" height="36" rx="8" fill="currentColor"/><path d="M36 46 v-8 a14 14 0 0 1 28 0 v8" fill="none" stroke="currentColor" stroke-width="7"/></g>
+  <g id="i-heartmini"><path d="M50 78 C22 56 24 30 42 30 q8 0 8 10 q0 -10 8 -10 c18 0 20 26 -8 48Z" fill="currentColor"/></g>
+  <g id="i-ear"><path d="M32 78 q-8 -22 4 -38 q16 -20 34 -6 q14 12 2 28 q-8 10 -2 18" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></g>
+</defs></svg>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar"><div class="wrap"><div class="row">
+  <div class="brandmark">
+    <svg viewBox="0 0 220 232" aria-hidden="true"><use href="#miniwm"/></svg>
+    <span class="wm"><b>Piko</b><i>Find</i></span>
+  </div>
+  <div class="chips">
+    <span class="chip">Ages 4–7</span>
+    <span class="chip">Android · Landscape</span>
+    <span class="chip">Offline · No data</span>
+    <span class="chip">Design System v1</span>
+  </div>
+</div></div></div>
+
+<main class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <section id="top" style="padding-top:clamp(30px,5vw,60px)">
+    <div class="hero">
+      <div class="hero-copy">
+        <span class="hero-tag">Listen, look and find!</span>
+        <h1>Piko<i>Find</i></h1>
+        <p>The visual north star for a warm, audio-first finding game for little players. Everything below — colour, type, Piko, components and every screen — is what the code builds toward.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+          <a class="kidbtn play" href="#screens">See the screens</a>
+          <a class="kidbtn ghost" href="#colour">Design tokens</a>
+        </div>
+      </div>
+      <div class="hero-stage">
+        <div class="stage-ring"></div>
+        <div class="hero-bubble"><small>Piko says</small>Can you find the yellow star?</div>
+        <div id="heroPiko"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRINCIPLES ================= -->
+  <section id="principles">
+    <span class="kicker">What guides every pixel</span>
+    <h2>Five promises to the child</h2>
+    <p class="lede">A four-year-old must play without reading. These principles outrank any visual flourish.</p>
+    <div class="grid cols-5" style="margin-top:26px">
+      <div class="card soft principle"><div class="glyph" style="background:var(--sky)"><svg><use href="#i-sound"/></svg></div><h3>Audio first</h3><p>Every instruction is spoken. Text is for grown-ups only.</p></div>
+      <div class="card soft principle"><div class="glyph" style="background:var(--coral)"><svg><use href="#i-replay"/></svg></div><h3>One clear action</h3><p>The child always knows the single thing to do next.</p></div>
+      <div class="card soft principle"><div class="glyph" style="background:var(--mint)"><svg><use href="#i-heartmini"/></svg></div><h3>Kind feedback</h3><p>A wrong tap is “Good try, look again!” — never a red cross.</p></div>
+      <div class="card soft principle"><div class="glyph" style="background:var(--yellow)"><svg><use href="#o-star"/></svg></div><h3>Fast sessions</h3><p>Roughly five finds, then a celebration. No long commitment.</p></div>
+      <div class="card soft principle"><div class="glyph" style="background:var(--purple)"><svg><use href="#i-lock"/></svg></div><h3>Offline &amp; private</h3><p>No account, no camera, no data. It all stays on the phone.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= COLOUR ================= -->
+  <section id="colour">
+    <span class="kicker">Colour</span>
+    <h2>A daylight palette</h2>
+    <p class="lede">Bright and warm without shouting. One dominant background and one main action colour per screen — yellow is saved for rewards.</p>
+
+    <h3 style="margin-top:26px">Primary</h3>
+    <div class="swatches" style="margin-top:12px">
+      <div class="sw"><div class="chipface" style="background:#43C6E8"></div><div class="meta"><div class="nm">Sky blue</div><div class="hex">#43C6E8</div><div class="use">Primary interface</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#FFD84D"></div><div class="meta"><div class="nm">Sunshine</div><div class="hex">#FFD84D</div><div class="use">Rewards · highlights</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#FF7A6B"></div><div class="meta"><div class="nm">Coral</div><div class="hex">#FF7A6B</div><div class="use">Important actions</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#6FD6A8"></div><div class="meta"><div class="nm">Mint</div><div class="hex">#6FD6A8</div><div class="use">Success · nature</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#9B7EDE"></div><div class="meta"><div class="nm">Purple</div><div class="hex">#9B7EDE</div><div class="use">Premium · special</div></div></div>
+    </div>
+
+    <h3 style="margin-top:24px">Supporting</h3>
+    <div class="swatches" style="margin-top:12px">
+      <div class="sw"><div class="chipface" style="background:#FFF8E7"></div><div class="meta"><div class="nm">Warm cream</div><div class="hex">#FFF8E7</div><div class="use">Main background</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#26324A"><span class="tagd">text</span></div><div class="meta"><div class="nm">Dark navy</div><div class="hex">#26324A</div><div class="use">Text · outlines</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#FFFFFF; box-shadow:inset 0 0 0 2px #EBE3CE"></div><div class="meta"><div class="nm">Soft white</div><div class="hex">#FFFFFF</div><div class="use">Cards</div></div></div>
+      <div class="sw"><div class="chipface" style="background:#D9E4EA"></div><div class="meta"><div class="nm">Grey-blue</div><div class="hex">#D9E4EA</div><div class="use">Disabled</div></div></div>
+      <div class="sw" style="border-style:dashed"><div class="chipface" style="background:linear-gradient(90deg,#C68A52,#F4A0BE,#EF5B5B)"></div><div class="meta"><div class="nm">Object hues</div><div class="hex">art only</div><div class="use">Never UI colour</div></div></div>
+    </div>
+
+    <div class="rulebox" style="margin-top:22px">
+      <p><span class="yes">✓</span><span><b>Text is dark navy</b>, never pure black.</span></p>
+      <p><span class="no">✕</span><span>Never signal right/wrong by <b>colour alone</b> — pair with shape &amp; motion.</span></p>
+      <p><span class="yes">✓</span><span>One dominant ground + <b>one</b> main action colour per screen.</span></p>
+      <p><span class="no">✕</span><span>No neon, no flashing colour changes, no busy gradients.</span></p>
+      <p><span class="yes">✓</span><span>Reserve <b>sunshine yellow</b> for stars, rewards &amp; “look here”.</span></p>
+      <p><span class="no">✕</span><span>Don’t use every colour equally on one screen.</span></p>
+    </div>
+  </section>
+
+  <!-- ================= TYPOGRAPHY ================= -->
+  <section id="type">
+    <span class="kicker">Typography</span>
+    <h2>Nunito, big and friendly</h2>
+    <p class="lede">Rounded, chunky, never thin. Only three weights ship. Child-facing text stays short.</p>
+    <div class="card soft" style="margin-top:22px">
+      <div class="typo-row"><span class="typo-label">button · 26–32</span><span class="t-btn">Play</span><span class="t-cap">ExtraBold 900</span></div>
+      <div class="typo-row"><span class="typo-label">instruction · 24–30</span><span class="t-inst">Find the yellow star</span><span class="t-cap">Bold 800</span></div>
+      <div class="typo-row"><span class="typo-label">body</span><span class="t-body">Great job! You found it. Here is a shiny sticker for your book.</span></div>
+      <div class="typo-row"><span class="typo-label">parent · 16–20</span><span class="t-parent">Restore purchase · Privacy policy · App version 1.0.0</span></div>
+      <div class="typo-row"><span class="typo-label">caption / label</span><span class="t-cap">World 1 · Playroom</span></div>
+      <div class="typo-row"><span class="typo-label">weights</span>
+        <span class="weights"><span class="w6">Aa 600</span><span class="w7">Aa 700</span><span class="w8">Aa 800</span><span class="w9">Aa 900</span></span>
+      </div>
+      <p class="note"><b>Bundling:</b> ship only Nunito SemiBold / Bold / ExtraBold with a system-font fallback. (This spec renders in a rounded system stack — the CSP blocks the webfont binary — so treat weights &amp; sizes as the source of truth, not the exact letterforms.)</p>
+    </div>
+  </section>
+
+  <!-- ================= MASCOT ================= -->
+  <section id="piko">
+    <span class="kicker">Mascot</span>
+    <h2>Meet Piko</h2>
+    <p class="lede">A small, round, never-judgy parrot. Teal body, sunshine wings, a coral beak and big kind eyes. Ten states, built from one shape with simple transforms — no heavy frame-by-frame art.</p>
+    <div class="poses" id="poses" style="margin-top:24px"></div>
+    <div class="personality">
+      <span class="trait">Curious</span><span class="trait">Patient</span><span class="trait">Encouraging</span>
+      <span class="trait">Playful</span><span class="trait">Never judgmental</span><span class="trait">Short sentences</span>
+    </div>
+    <p class="note">Export as static <b>SVG</b> poses; animate with scale / rotate / translate only. A two-to-four-frame sprite is the ceiling — no GIF, no video, no giant Lottie.</p>
+  </section>
+
+  <!-- ================= COMPONENTS ================= -->
+  <section id="components">
+    <span class="kicker">Components</span>
+    <h2>Chunky, rounded, outlined</h2>
+    <p class="lede">Thick navy outlines, soft static drop shadows, big touch areas. No glassmorphism, blur or thin borders.</p>
+    <div class="comp-grid" style="margin-top:24px">
+      <div class="card comp"><h3>KidButton</h3><div class="demo">
+        <button class="kidbtn play">Play</button>
+        <button class="kidbtn sky">Start</button>
+        <button class="kidbtn ghost">Back</button>
+        <button class="kidbtn disabled" disabled>Locked</button>
+      </div><p class="note" style="margin:0">Pill shape · 3px navy border · pressed = drops onto its shadow.</p></div>
+
+      <div class="card comp"><h3>IconButton</h3><div class="demo">
+        <button class="iconbtn on" aria-label="Sound on"><svg><use href="#i-sound"/></svg></button>
+        <button class="iconbtn" aria-label="Repeat"><svg><use href="#i-replay"/></svg></button>
+        <button class="iconbtn" aria-label="Back"><svg><use href="#i-back"/></svg></button>
+        <button class="iconbtn" aria-label="Parent area"><svg><use href="#i-parent"/></svg></button>
+        <button class="iconbtn coral" aria-label="Star"><svg><use href="#o-star"/></svg></button>
+      </div><p class="note" style="margin:0">Round · labelled for grown-ups · ≥ 60×60.</p></div>
+
+      <div class="card comp"><h3>ProgressDots — “find 3 of 5”</h3><div class="demo">
+        <div class="dots"><span class="dot done"></span><span class="dot done"></span><span class="dot now"></span><span class="dot"></span><span class="dot"></span></div>
+      </div><p class="note" style="margin:0">The only “score” a child sees: five gentle dots, current one enlarged.</p></div>
+
+      <div class="card comp"><h3>Stickers &amp; rewards</h3><div class="demo">
+        <div class="stickerbadge"><svg><use href="#o-butterfly"/></svg></div>
+        <div class="stickerbadge" style="background:var(--sky);transform:rotate(3deg)"><svg><use href="#o-rainbow"/></svg></div>
+        <div class="stickerbadge locked"><svg><use href="#o-flower"/></svg></div>
+      </div><p class="note" style="margin:0">Earned = full colour · locked = grey silhouette. Deterministic, never a loot box.</p></div>
+    </div>
+    <div class="tt"><span class="k">≥ 64dp</span> Child-facing touch targets are large, with invisible hitboxes a little bigger than the art, kept clear of screen edges, gesture zones and Piko’s bubble.</div>
+  </section>
+
+  <!-- ================= SCREENS ================= -->
+  <section id="screens">
+    <span class="kicker">Screens · 1280 × 720 landscape</span>
+    <h2>The whole journey</h2>
+    <p class="lede">Every screen rendered with the real tokens and components. Objects are placed with normalized 0–1 coordinates — exactly how the engine positions them.</p>
+
+    <div class="flowlabel"><span>🧒 Child flow</span><span class="ln"></span></div>
+    <div class="screens">
+
+      <!-- SPLASH -->
+      <figure class="screen"><div class="device"><div class="safe sc-sky">
+        <div class="dwm" style="left:50%;top:44%;transform:translate(-50%,-50%);font-size:clamp(20px,4.4vw,40px);color:#fff">Piko<i style="color:#FFF3B0">Find</i></div>
+        <div class="miniPiko" style="left:50%;top:70%;width:26%"></div>
+      </div></div><figcaption>Splash<small>1–2s · logo + one Piko movement · no video</small></figcaption></figure>
+
+      <!-- PARENT INTRO -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dcard" style="left:8%;top:12%;right:8%;bottom:12%;padding:0"></div>
+        <div class="dwm" style="left:12%;top:20%;font-size:clamp(13px,2.6vw,22px)">Hello, grown-ups 👋</div>
+        <div class="ibubble" style="left:12%;top:36%;right:34%;border-radius:12px;background:transparent;border:0;box-shadow:none;font-weight:700;color:var(--ink-soft)">For ages 4–7 · works offline · no account · no data collected. Audio matters — turn sound on. World 1 is free.</div>
+        <div class="miniPiko" style="left:82%;top:44%;width:20%"></div>
+        <div class="dbtn" style="left:12%;bottom:18%">Start PikoFind</div>
+      </div></div><figcaption>Parent introduction<small>Shown once · the only text-heavy screen</small></figcaption></figure>
+
+      <!-- HOME -->
+      <figure class="screen"><div class="device"><div class="safe sc-play">
+        <div class="dwm" style="left:7%;top:12%;font-size:clamp(14px,2.8vw,24px)">Piko<i>Find</i></div>
+        <div class="dbar" style="right:6%;top:11%"><span class="dicon" style="position:static"><svg><use href="#o-star"/></svg></span><b style="font-size:clamp(11px,2vw,16px)">12</b></div>
+        <div class="dicon" style="right:6%;top:32%"><svg><use href="#i-sound"/></svg></div>
+        <div class="dicon" style="left:6%;bottom:9%"><svg><use href="#i-parent"/></svg></div>
+        <div class="miniPiko" style="left:26%;top:56%;width:26%"></div>
+        <div class="dbtn" style="left:52%;top:50%;transform:translateY(-50%);font-size:clamp(13px,2.6vw,22px);padding:12px 34px">▶ Play</div>
+        <div class="dbtn ghost" style="left:60%;top:74%;transform:translateY(-50%)">Stickers</div>
+      </div></div><figcaption>Home<small>Play is the largest thing · no bottom nav bar</small></figcaption></figure>
+
+      <!-- WORLD SELECT -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dwm" style="left:50%;top:11%;transform:translateX(-50%);font-size:clamp(12px,2.4vw,20px)">Choose a world</div>
+        <div class="worldcard sc-play" style="left:6%;top:26%;width:26%;height:52%"><div class="obj" style="left:50%;top:40%;width:34%"><svg><use href="#o-ball"/></svg></div><div class="cap">Playroom</div></div>
+        <div class="worldcard sc-garden" style="left:37%;top:26%;width:26%;height:52%"><div class="lockpill"><svg><use href="#i-lock"/></svg></div><div class="obj" style="left:50%;top:40%;width:34%"><svg><use href="#o-flower"/></svg></div><div class="cap">Garden</div></div>
+        <div class="worldcard sc-class" style="left:68%;top:26%;width:26%;height:52%"><div class="lockpill"><svg><use href="#i-lock"/></svg></div><div class="obj" style="left:50%;top:40%;width:32%"><svg><use href="#o-book"/></svg></div><div class="cap">Classroom</div></div>
+      </div></div><figcaption>World selection<small>Locked worlds stay visible · tap → parent gate, never a hard sell</small></figcaption></figure>
+
+      <!-- WORLD INTRO -->
+      <figure class="screen"><div class="device"><div class="safe sc-play">
+        <div class="miniPiko" style="left:26%;top:56%;width:24%"></div>
+        <div class="ibubble" style="left:44%;top:26%;right:8%">Welcome to my playroom! Listen carefully and find the toys.</div>
+        <div class="dicon" style="left:44%;top:60%"><svg><use href="#i-replay"/></svg></div>
+        <div class="dbtn" style="left:60%;top:62%">Start</div>
+        <div class="dicon" style="left:6%;top:9%"><svg><use href="#i-back"/></svg></div>
+      </div></div><figcaption>World introduction<small>Piko sets the scene by voice · Start · Repeat · Back</small></figcaption></figure>
+
+      <!-- GAME -->
+      <figure class="screen"><div class="device"><div class="safe sc-play">
+        <div class="ibubble" style="left:6%;top:8%;max-width:52%">Can you find the <b>red ball</b>?</div>
+        <div class="dbar" style="right:6%;top:9%"><span class="ddot done"></span><span class="ddot done"></span><span class="ddot now"></span><span class="ddot"></span><span class="ddot"></span></div>
+        <div class="dicon" style="right:6%;bottom:9%"><svg><use href="#i-replay"/></svg></div>
+        <div class="obj" style="left:22%;top:66%;width:15%"><svg><use href="#o-ball"/></svg></div>
+        <div class="obj" style="left:52%;top:40%;width:13%"><svg><use href="#o-star"/></svg></div>
+        <div class="obj" style="left:70%;top:70%;width:16%"><svg><use href="#o-teddy"/></svg></div>
+        <div class="obj" style="left:44%;top:74%;width:13%"><svg><use href="#o-car"/></svg></div>
+        <div class="obj" style="left:86%;top:44%;width:11%"><svg><use href="#o-block"/></svg></div>
+      </div></div><figcaption>Game screen<small>8–12 big objects · bubble · repeat · 5 dots — nothing else</small></figcaption></figure>
+
+      <!-- CORRECT -->
+      <figure class="screen"><div class="device"><div class="safe sc-play">
+        <div class="halo" style="left:22%;top:66%;width:20%;aspect-ratio:1;transform:translate(-50%,-50%)"></div>
+        <div class="obj" style="left:22%;top:66%;width:17%"><svg><use href="#o-ball"/></svg></div>
+        <div class="miniPiko" style="left:74%;top:60%;width:22%"></div>
+        <div class="ibubble" style="left:40%;top:16%;background:var(--mint);color:#0f3d29">You found it! ⭐</div>
+        <div class="star-emph" style="left:56%;top:30%;font-size:22px">✦</div><div class="star-emph" style="left:66%;top:20%;font-size:16px">✦</div>
+      </div></div><figcaption>Correct feedback<small>Object pops · Piko cheers · +1 star · gentle sound · auto-advance</small></figcaption></figure>
+
+      <!-- INCORRECT -->
+      <figure class="screen"><div class="device"><div class="safe sc-play">
+        <div class="obj" style="left:70%;top:70%;width:16%;filter:drop-shadow(0 3px 3px rgba(0,0,0,.2)) rotate(-8deg)"><svg><use href="#o-teddy"/></svg></div>
+        <div class="wiggle-mark" style="left:70%;top:52%;font-size:20px">～</div>
+        <div class="miniPiko" style="left:24%;top:60%;width:22%"></div>
+        <div class="ibubble" style="left:40%;top:16%;max-width:46%">Good try. Look again!</div>
+      </div></div><figcaption>Incorrect feedback<small>Tapped object wiggles · soft sound · no penalty, no red cross</small></figcaption></figure>
+
+      <!-- SESSION COMPLETE -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dwm" style="left:50%;top:12%;transform:translateX(-50%);font-size:clamp(12px,2.4vw,20px)">Wonderful!</div>
+        <div class="dbar" style="left:50%;top:30%;transform:translateX(-50%)"><span class="ddot done"></span><span class="ddot done"></span><span class="ddot done"></span><span class="ddot done"></span><span class="ddot done"></span></div>
+        <div class="stickerbadge" style="position:absolute;left:20%;top:56%;transform:translate(-50%,-50%) rotate(-6deg);width:20%;height:auto;aspect-ratio:1"><svg><use href="#o-butterfly"/></svg></div>
+        <div class="miniPiko" style="left:50%;top:60%;width:20%"></div>
+        <div class="dbtn ghost" style="left:70%;top:52%">Replay</div>
+        <div class="dbtn sky" style="left:70%;top:70%">Next world</div>
+      </div></div><figcaption>Session complete<small>Stars · a new sticker · replay / next / home — a few reused shapes, not confetti storms</small></figcaption></figure>
+
+      <!-- STICKER BOOK -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dwm" style="left:7%;top:10%;font-size:clamp(12px,2.4vw,20px)">My stickers</div>
+        <div class="dicon" style="left:6%;bottom:9%"><svg><use href="#i-back"/></svg></div>
+        <div class="stickerbadge" style="position:absolute;left:24%;top:44%;transform:translate(-50%,-50%) rotate(-5deg);width:15%;aspect-ratio:1;height:auto"><svg><use href="#o-butterfly"/></svg></div>
+        <div class="stickerbadge" style="position:absolute;left:44%;top:44%;transform:translate(-50%,-50%) rotate(4deg);width:15%;aspect-ratio:1;height:auto;background:var(--sky)"><svg><use href="#o-rainbow"/></svg></div>
+        <div class="stickerbadge locked" style="position:absolute;left:64%;top:44%;transform:translate(-50%,-50%);width:15%;aspect-ratio:1;height:auto"><svg><use href="#o-flower"/></svg></div>
+        <div class="stickerbadge locked" style="position:absolute;left:84%;top:44%;transform:translate(-50%,-50%);width:15%;aspect-ratio:1;height:auto"><svg><use href="#o-duck"/></svg></div>
+      </div></div><figcaption>Sticker book<small>Earned in colour, locked as silhouettes · tap for a little sound</small></figcaption></figure>
+    </div>
+
+    <div class="flowlabel"><span>🔒 Parent flow</span><span class="ln"></span></div>
+    <div class="screens">
+      <!-- PARENT GATE -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dcard" style="left:26%;top:16%;right:26%;bottom:16%"></div>
+        <div class="dwm" style="left:50%;top:24%;transform:translateX(-50%);font-size:clamp(10px,2vw,16px);color:var(--ink-soft)">Grown-up check</div>
+        <div class="gate-eq" style="left:50%;top:38%;transform:translateX(-50%);width:34%;height:16%;font-size:clamp(12px,2.6vw,22px)">6 × 4 = ?</div>
+        <div class="keypad" style="left:38%;top:56%;width:24%">
+          <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+          <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+        </div>
+      </div></div><figcaption>Parent gate<small>Hold 3s + solve — a task a 4-year-old can’t. Guards purchases &amp; settings</small></figcaption></figure>
+
+      <!-- PARENT SETTINGS -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dwm" style="left:7%;top:9%;font-size:clamp(11px,2.2vw,18px)">Parent area</div>
+        <div class="setrow" style="left:7%;top:26%;width:40%"><span>Music</span><span class="toggle"></span></div>
+        <div class="setrow" style="left:7%;top:42%;width:40%"><span>Voice</span><span class="toggle"></span></div>
+        <div class="setrow" style="left:7%;top:58%;width:40%"><span>Sound effects</span><span class="toggle off"></span></div>
+        <div class="setrow" style="left:53%;top:26%;width:40%"><span>Language</span><span>English ▾</span></div>
+        <div class="setrow" style="left:53%;top:42%;width:40%;border-color:var(--coral);color:var(--coral)"><span>Reset progress</span><span>⟲</span></div>
+        <div class="dbtn purple" style="left:53%;top:60%;background:var(--purple)">Unlock full game</div>
+      </div></div><figcaption>Parent settings<small>Sound · language · purchase · restore · reset (double-confirm) · version</small></figcaption></figure>
+
+      <!-- PURCHASE -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dcard" style="left:10%;top:12%;right:10%;bottom:12%"></div>
+        <div class="dwm" style="left:50%;top:20%;transform:translateX(-50%);font-size:clamp(11px,2.2vw,18px)">Unlock all of PikoFind</div>
+        <div class="obj" style="left:26%;top:52%;width:12%"><svg><use href="#o-flower"/></svg></div>
+        <div class="obj" style="left:40%;top:52%;width:12%"><svg><use href="#o-book"/></svg></div>
+        <div class="ibubble" style="left:54%;top:44%;right:14%;background:transparent;border:0;box-shadow:none;font-weight:700;color:var(--ink-soft)">Garden + Classroom, every sticker, and future languages. One payment, forever.</div>
+        <div class="dbtn purple" style="left:50%;bottom:18%;transform:translateX(-50%);background:var(--purple)">Unlock · $2.99</div>
+      </div></div><figcaption>Full-game purchase<small>Behind the gate only · plain Google Play flow · restore supported · no pressure</small></figcaption></figure>
+
+      <!-- RESET CONFIRM -->
+      <figure class="screen"><div class="device"><div class="safe sc-cream">
+        <div class="dcard" style="left:22%;top:24%;right:22%;bottom:24%;border-color:var(--coral)"></div>
+        <div class="dwm" style="left:50%;top:36%;transform:translateX(-50%);font-size:clamp(10px,2vw,15px);color:var(--coral)">Erase all progress?</div>
+        <div class="ibubble" style="left:50%;top:46%;transform:translateX(-50%);background:transparent;border:0;box-shadow:none;color:var(--ink-soft);font-weight:700;text-align:center">Stars and stickers can’t come back.</div>
+        <div class="dbtn ghost" style="left:30%;bottom:30%">Keep</div>
+        <div class="dbtn" style="left:56%;bottom:30%">Erase</div>
+      </div></div><figcaption>Reset confirmation<small>Second confirm required · the one place coral means “careful”</small></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ================= LAYOUT ================= -->
+  <section id="layout">
+    <span class="kicker">Layout &amp; responsive</span>
+    <h2>One landscape canvas, everywhere</h2>
+    <div class="grid cols-2" style="margin-top:24px;align-items:start">
+      <div class="card soft">
+        <h3>Safe area &amp; letterboxing</h3>
+        <p class="note" style="margin:.4rem 0 14px">Baseline 1280×720 (16:9). Scale proportionally, letterbox on taller screens, centre on tablets — never stretch.</p>
+        <div class="safebox">
+          <div class="letterbar l"></div><div class="letterbar r"></div>
+          <div class="inner">safe play area</div>
+        </div>
+      </div>
+      <div class="card soft">
+        <h3>Normalized object coordinates</h3>
+        <p class="note" style="margin:.4rem 0 14px">Objects store 0–1 positions, not pixels — so every screen above places art the same way the engine will.</p>
+        <div class="coordbox">{<br>&nbsp;&nbsp;<span class="k">id</span>: <span class="n">"red_ball"</span>,<br>&nbsp;&nbsp;<span class="k">position</span>: { <span class="k">x</span>: <span class="n">0.22</span>, <span class="k">y</span>: <span class="n">0.66</span> },<br>&nbsp;&nbsp;<span class="k">dimensions</span>: { <span class="k">width</span>: <span class="n">0.15</span>, <span class="k">height</span>: <span class="n">0.20</span> },<br>&nbsp;&nbsp;<span class="k">hitboxPadding</span>: <span class="n">0.03</span><br>}</div>
+        <p class="note" style="margin-top:12px">Keep targets clear of edges, gesture zones, other objects and Piko’s bubble. Distinguish by shape as well as colour.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ASSETS ================= -->
+  <section id="assets">
+    <span class="kicker">Assets &amp; handoff</span>
+    <h2>Reusable art, one consistent style</h2>
+    <p class="lede">Thirty-plus objects share one outline weight and perspective. Below are starter concepts — final illustrations replace them without touching code.</p>
+    <div class="objset" style="margin-top:22px">
+      <div class="objtile"><svg><use href="#o-star"/></svg><span>star</span></div>
+      <div class="objtile"><svg><use href="#o-ball"/></svg><span>ball</span></div>
+      <div class="objtile"><svg><use href="#o-car"/></svg><span>car</span></div>
+      <div class="objtile"><svg><use href="#o-teddy"/></svg><span>teddy</span></div>
+      <div class="objtile"><svg><use href="#o-block"/></svg><span>block</span></div>
+      <div class="objtile"><svg><use href="#o-cup"/></svg><span>cup</span></div>
+      <div class="objtile"><svg><use href="#o-apple"/></svg><span>apple</span></div>
+      <div class="objtile"><svg><use href="#o-book"/></svg><span>book</span></div>
+      <div class="objtile"><svg><use href="#o-pencil"/></svg><span>pencil</span></div>
+      <div class="objtile"><svg><use href="#o-flower"/></svg><span>flower</span></div>
+      <div class="objtile"><svg><use href="#o-butterfly"/></svg><span>butterfly</span></div>
+      <div class="objtile"><svg><use href="#o-duck"/></svg><span>duck</span></div>
+      <div class="objtile"><svg><use href="#o-heart"/></svg><span>heart</span></div>
+      <div class="objtile"><svg><use href="#o-rainbow"/></svg><span>rainbow</span></div>
+    </div>
+
+    <div class="card soft" style="margin-top:22px">
+      <table class="asset">
+        <thead><tr><th>Asset</th><th>Format</th><th>Size / rule</th></tr></thead>
+        <tbody>
+          <tr><td class="k">scene_*.webp</td><td>WebP</td><td>1280×720 · &lt; ~250 KB · one in memory · no transparency</td></tr>
+          <tr><td class="k">object_*.svg</td><td>SVG (or WebP if detailed)</td><td>128–256px source · transparent · tight bbox · consistent outline</td></tr>
+          <tr><td class="k">piko_*.svg</td><td>SVG poses</td><td>Static poses · transform-animated · small sprite only if needed</td></tr>
+          <tr><td class="k">sticker_*.svg</td><td>SVG</td><td>Earned + locked-silhouette variants</td></tr>
+          <tr><td class="k">audio (en/…)</td><td>M4A / AAC mono</td><td>~48–64 kbps · trimmed · one voice line at a time</td></tr>
+        </tbody>
+      </table>
+      <div class="fnames">
+        <code>piko_idle.svg</code><code>piko_celebrate.svg</code><code>scene_playroom.webp</code><code>object_red_ball.svg</code><code>object_yellow_star.svg</code><code>sticker_butterfly.svg</code>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="wm"><b>Piko</b><i>Find</i></span>
+    <p>Design System v1 — the visual north star for <code style="font-family:var(--mono)">src/theme</code> and the component library. Screens are living mockups built from the real tokens; swap final art into <code style="font-family:var(--mono)">assets/</code> and the code stays put.</p>
+    <p style="margin-top:8px;font-size:.76rem">Listen, look and find! · Android-first · offline · ages 4–7</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var tpl = document.getElementById('pikoTpl');
+  function makePiko(mods){
+    var svg = tpl.content.firstElementChild.cloneNode(true);
+    (mods||[]).forEach(function(m){ svg.classList.add(m); });
+    return svg;
+  }
+  // hero
+  var hero = document.getElementById('heroPiko');
+  if(hero) hero.appendChild(makePiko(['pk-idle']));
+
+  // wordmark mini icon in defs-less spot: reuse a small piko in topbar
+  var wm = document.querySelector('.brandmark svg');
+  if(wm){ wm.replaceWith(makePiko([])); document.querySelector('.brandmark .piko').style.width='40px'; }
+
+  // mini pikos in device screens
+  document.querySelectorAll('.miniPiko').forEach(function(slot){
+    slot.appendChild(makePiko([]));
+  });
+
+  // pose grid
+  var poses = [
+    {m:'pk-idle', label:'Idle'},
+    {m:'pk-speaking', label:'Speaking'},
+    {m:'pk-listening', label:'Listening', decor:'<span class="decor" style="right:10%;top:16%"><svg width="18" height="18" style="color:var(--sky)"><use href="#i-ear"/></svg></span>'},
+    {m:'pk-pointing', label:'Pointing'},
+    {m:'pk-celebrate', label:'Celebrating', decor:'<span class="decor" style="left:12%;top:14%;font-size:16px">✦</span><span class="decor" style="right:14%;top:22%;font-size:12px">✦</span>'},
+    {m:'pk-thinking', label:'Thinking', decor:'<span class="decor" style="right:14%;top:18%;font-size:16px">…</span>'},
+    {m:'pk-encourage', label:'Encouraging', decor:'<span class="decor" style="right:14%;top:18%"><svg width="16" height="16" style="color:var(--coral)"><use href="#i-heartmini"/></svg></span>'},
+    {m:'pk-flying', label:'Flying'},
+    {m:'pk-star', label:'Holding a star'},
+    {m:'pk-sleeping', label:'Sleeping', decor:'<span class="decor" style="right:12%;top:16%;font-size:14px">z<small style="font-size:9px">z</small></span>'}
+  ];
+  var grid = document.getElementById('poses');
+  poses.forEach(function(p){
+    var tile = document.createElement('div');
+    tile.className = 'pose';
+    tile.appendChild(makePiko([p.m]));
+    if(p.decor){ tile.insertAdjacentHTML('beforeend', p.decor); }
+    if(p.m==='pk-star'){
+      var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      s.setAttribute('viewBox','0 0 100 100'); s.style.cssText='position:absolute;width:34%;left:50%;bottom:16%;transform:translateX(-50%);z-index:3';
+      s.innerHTML='<use href="#o-star"/>'; tile.appendChild(s);
+    }
+    tile.insertAdjacentHTML('beforeend','<span class="plabel">'+p.label+'</span>');
+    grid.appendChild(tile);
+  });
+})();
+</script>
+
+<style>
+  /* pose modifiers — one shape, simple transforms */
+  .pk-wing{transition:transform .3s}
+  .pk-speaking .pk-beak-closed,.pk-celebrate .pk-beak-closed,.pk-flying .pk-beak-closed{display:none}
+  .pk-speaking .pk-beak-open,.pk-celebrate .pk-beak-open,.pk-flying .pk-beak-open{display:block}
+  .pk-listening .pk-root{transform:rotate(7deg); transform-origin:110px 120px}
+  .pk-pointing .pk-wing-r{transform:rotate(-46deg)}
+  .pk-celebrate .pk-wing-r{transform:rotate(-58deg)}
+  .pk-celebrate .pk-wing-l{transform:rotate(58deg)}
+  .pk-flying .pk-wing-r{transform:rotate(-78deg) translateY(-6px)}
+  .pk-flying .pk-wing-l{transform:rotate(78deg) translateY(-6px)}
+  .pk-thinking .pk-wing-r{transform:rotate(-30deg) translate(-6px,-18px)}
+  .pk-encourage .pk-wing-r{transform:rotate(-20deg)}
+  .pk-star .pk-wing-r{transform:rotate(-30deg)} .pk-star .pk-wing-l{transform:rotate(30deg)}
+  .pk-sleeping .pk-eyes{display:none} .pk-sleeping .pk-lids{display:block !important}
+  .pk-sleeping .pk-root{transform:rotate(4deg); transform-origin:110px 120px}
+  @media (prefers-reduced-motion:no-preference){
+    .pose:hover .pk-wing-r{transform:rotate(-40deg)}
+  }
+</style>

@@ -1,56 +1,32 @@
-# Welcome to your Expo app 👋
+# PikoFind
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Listen, look and find!** — an offline, Android-first listening-and-finding game for children aged 4–7.
 
-## Get started
+Piko the parrot gives a spoken instruction ("Find the yellow star") and the child taps the right object in a colourful scene. Audio-first, no reading required, no accounts, no ads, no data collection — everything stays on the device.
 
-1. Install dependencies
+## Status
+🚧 **Phase 0 — Documentation & repository setup.** The planning docs are written; the Expo app has not been scaffolded yet. See [`docs/TASKS.md`](docs/TASKS.md).
 
-   ```bash
-   npm install
-   ```
+## Documentation
+- [`docs/PIKOFIND_MASTER_PLAN.md`](docs/PIKOFIND_MASTER_PLAN.md) — canonical product, design & implementation plan
+- [`docs/TASKS.md`](docs/TASKS.md) — phase-by-phase task tracker
+- [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — colours, typography, spacing, components
+- [`docs/CONTENT_GUIDE.md`](docs/CONTENT_GUIDE.md) — worlds, levels, data model, content checklist
+- [`docs/PERFORMANCE_BUDGET.md`](docs/PERFORMANCE_BUDGET.md) — low-end Android targets
+- [`docs/PRIVACY.md`](docs/PRIVACY.md) — privacy & child-safety design
+- [`docs/PLAY_STORE_CHECKLIST.md`](docs/PLAY_STORE_CHECKLIST.md) — launch requirements
+- [`CLAUDE.md`](CLAUDE.md) — short always-on brief + hard constraints
 
-2. Start the app
+## Tech stack
+React Native · Expo SDK 57 (development build) · TypeScript (strict) · Expo Router · expo-audio · expo-image · expo-sqlite · react-native-svg · react-native-reanimated · Zustand · Zod.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Getting started
+> Commands become available once the Expo project is initialized (Phase 0, step 2).
 ```bash
-npm run reset-project
+npm install
+npm run start      # Expo dev server
+npm run android    # run on a connected Android device
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Principles
+Offline · private · audio-first · one clear action per screen · positive feedback · fast ~5-challenge sessions · smooth on a 2 GB Android phone.
