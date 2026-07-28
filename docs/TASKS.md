@@ -60,9 +60,19 @@ Remaining polish (not blocking Phase 2):
 - [ ] `expo-sqlite` web stub if web is ever targeted (Android-first, so deferred)
 - [ ] Device-verify rendering/scaling (S24)
 
-## Phase 3 — Audio engine
-- [ ] Audio manager (no overlapping instructions; play/pause/replay/unload; music + voice volume; pause on background; resume)
-- **Done when:** rapid tapping never overlaps voice, previous audio released, mute persists after restart.
+## Phase 3 — Audio engine — DONE (engine), 2026-07-28
+- [x] Audio manager (`src/features/audio/AudioManager.ts`, singleton `audio`) — expo-audio, framework-free so game code can call it directly; `init()` wired into root `_layout` after settings hydrate
+- [x] No overlapping instructions — single reused voice player; a new `playVoice` `.replace()`s the source (old clip stops), so rapid tapping never overlaps; `playVoice` returns a promise that resolves on finish / interruption / disabled / missing-asset (never hangs)
+- [x] play / replay / stop / unload (`teardown` releases every native player)
+- [x] Music channel — one quiet loop per world (`playMusic`/`stopMusic`), ducks under voice (0.35 → 0.12) and restores
+- [x] Feedback sfx kept loaded (correct/wrong/tap/star/sticker), one player per key
+- [x] Volume + mute obey persisted settings (soundOn master + music/voice/effects); a store subscription reconciles live when a parent toggles a switch
+- [x] Pause on background + resume (AppState listener; remembers whether voice was mid-play), `setAudioModeAsync` respects the silent switch, no background playback, ducks other apps
+- [x] Graceful **missing-asset** handling — registry (`src/features/audio/sources.ts`) is empty until recordings exist; unknown key = silent no-op + one dev warning, so game flow builds/awaits before audio is recorded
+- [x] Verified: tsc + eslint clean, android export bundles
+- **Added dep:** `expo-audio` (~57.0.3; core audio-first module, SDK-57 matched, playback needs no permission, no data leaves device; master-plan replacement for deprecated expo-av).
+- [ ] Device-verify on S24 once first recordings land: rapid-tap = no voice overlap; mute persists after restart; Home/lock/return resumes cleanly. (Headless can't verify audible behaviour.)
+- **Done when:** rapid tapping never overlaps voice, previous audio released, mute persists after restart. *(Engine complete; audible verification pending real recordings + device.)*
 
 ## Phase 4 — Core game engine
 - [ ] World/level loading · responsive placement · hitboxes · single-target logic · correct/incorrect logic · attempt tracking · assistance · five-challenge sessions · completion
