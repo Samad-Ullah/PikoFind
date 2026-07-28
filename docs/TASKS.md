@@ -40,9 +40,21 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - **Done when:** gallery shows all components scaling correctly on phone + tablet; no gameplay logic added.
 
 ## Phase 2 — Application shell
-- [ ] Splash · Parent introduction · Home · World selection · Parent gate · Parent settings
-- [ ] Routing (Expo Router) · audio settings · first-launch persistence
-- **Done when:** all shell screens navigable, parent area not accidentally openable, settings survive restart.
+Slice 1 (navigation + gate) — DONE:
+- [x] Splash (`index.tsx`) → Home → World selection → World intro (`world/[worldId].tsx`)
+- [x] Parent gate (`parent/gate.tsx`, multiplication barrier) → Parent settings (`parent/settings.tsx`)
+- [x] Routing (Expo Router, typed routes) + settings store (`store/useSettings.ts`, zustand, in-memory)
+- [x] Worlds content list (`content/worlds.ts`; playroom free, garden/classroom premium → gate)
+- [x] Gallery moved to `/gallery` (dev screen; temporarily reachable via Home "Stickers")
+- [x] Verified: tsc + eslint clean, android export bundles
+- [~] Audio settings: toggles wired to the store; actual audio engine is Phase 3
+Slice 2 (next) — TODO:
+- [ ] First-launch **parent introduction** / onboarding gating
+- [ ] SQLite (expo-sqlite) persistence so settings + first-launch survive restart; hydrate store on launch
+- [ ] Replace Home "Stickers" temp link once the sticker book exists (Phase 6)
+- [ ] Device-verify rendering/scaling (S24, this evening)
+- **Done when:** all shell screens navigable ✓, parent area not accidentally openable ✓, settings survive restart (← needs slice 2).
+- **Added dep:** `zustand` (runtime state; pure-JS, no native, no data).
 
 ## Phase 3 — Audio engine
 - [ ] Audio manager (no overlapping instructions; play/pause/replay/unload; music + voice volume; pause on background; resume)
