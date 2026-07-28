@@ -74,9 +74,20 @@ Remaining polish (not blocking Phase 2):
 - [ ] Device-verify on S24 once first recordings land: rapid-tap = no voice overlap; mute persists after restart; Home/lock/return resumes cleanly. (Headless can't verify audible behaviour.)
 - **Done when:** rapid tapping never overlaps voice, previous audio released, mute persists after restart. *(Engine complete; audible verification pending real recordings + device.)*
 
-## Phase 4 — Core game engine
-- [ ] World/level loading · responsive placement · hitboxes · single-target logic · correct/incorrect logic · attempt tracking · assistance · five-challenge sessions · completion
-- **Done when:** one placeholder world plays offline, rewards can't duplicate, rapid tapping doesn't break state.
+## Phase 4 — Core game engine — DONE, 2026-07-28
+- [x] Content model (`src/content/types.ts`: Level, SceneObject, AssistanceRule) + placeholder Playroom session (`src/content/levels/playroom.ts`, 5 challenges) + `getLevels(worldId)`
+- [x] Game-state machine (`src/game/useGameSession.ts`, zustand): loading→instruction→waiting→correct/incorrect→(waiting+assistance)→next→complete. Pure (no audio/timers) so it's testable
+- [x] Guards: a tap is honoured only in `waiting` and immediately leaves it → **no double-processing / no double-reward** on rapid taps; stars added once on the correct transition
+- [x] Responsive placement + hitboxes: `SceneObjectView` (labelled coloured shape, generous `hitSlop`) inside `SceneItem` (normalized 0..1), objects sized wide
+- [x] Single-target logic + attempt tracking + assistance (highlight correct + auto-repeat instruction after 2 wrong)
+- [x] Kind feedback (§3.3): wrong tap → object wiggles + Piko "encouraging" + soft sound + "Good try" voice; **no penalty, no red cross, no star loss**
+- [x] Game screen (`src/app/game/[worldId].tsx`): scene, Piko instruction bubble, replay button, 5-dot progress, sound toggle, leave-game; drives audio via the Phase-3 engine
+- [x] Session completion → results (`src/app/results.tsx`): Piko celebrates, stars earned, Play again / Home
+- [x] Wired world intro Start → game; intro + instruction voices play through the audio engine (silent until recordings exist)
+- [x] Verified: tsc + eslint clean, android export bundles
+- [ ] Device-verify on S24: taps register, hitboxes fair, layout fits 1280×720 landscape, feedback timing feels right (headless can't verify visuals/taps)
+- **Note:** stars are in-session only; persisting stars/stickers to SQLite is Phase 6. Premium worlds have no levels yet (Phase 7) — the game screen shows a friendly "coming soon".
+- **Done when:** one placeholder world plays offline ✓, rewards can't duplicate ✓, rapid tapping doesn't break state ✓ — **engine complete; device pass pending.**
 
 ## Phase 5 — Vertical slice
 - [ ] One polished Playroom session with final assets (background, mascot, 5 challenges, sounds, feedback, result, 1 sticker)
