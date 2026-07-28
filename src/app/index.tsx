@@ -7,14 +7,22 @@ import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { PikoMascot } from '@/components/PikoMascot';
+import { getBoolSetting } from '@/db/settings';
 import { colors, spacing, typography } from '@/theme';
 
 export default function Splash() {
   const router = useRouter();
 
   useEffect(() => {
-    const timer = setTimeout(() => router.replace('/home'), 1500);
-    return () => clearTimeout(timer);
+    let active = true;
+    (async () => {
+      const onboarded = await getBoolSetting('onboarded');
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      if (active) router.replace(onboarded ? '/home' : '/onboarding');
+    })();
+    return () => {
+      active = false;
+    };
   }, [router]);
 
   return (

@@ -48,13 +48,17 @@ Slice 1 (navigation + gate) — DONE:
 - [x] Gallery moved to `/gallery` (dev screen; temporarily reachable via Home "Stickers")
 - [x] Verified: tsc + eslint clean, android export bundles
 - [~] Audio settings: toggles wired to the store; actual audio engine is Phase 3
-Slice 2 (next) — TODO:
-- [ ] First-launch **parent introduction** / onboarding gating
-- [ ] SQLite (expo-sqlite) persistence so settings + first-launch survive restart; hydrate store on launch
-- [ ] Replace Home "Stickers" temp link once the sticker book exists (Phase 6)
-- [ ] Device-verify rendering/scaling (S24, this evening)
-- **Done when:** all shell screens navigable ✓, parent area not accidentally openable ✓, settings survive restart (← needs slice 2).
-- **Added dep:** `zustand` (runtime state; pure-JS, no native, no data).
+Slice 2 (persistence + onboarding) — DONE:
+- [x] First-launch **parent introduction** (`onboarding.tsx`); splash routes to it once, then remembers via an `onboarded` flag
+- [x] SQLite (`src/db/database.ts` + `settings.ts`, expo-sqlite) — `settings` key/value table
+- [x] Settings store hydrates from + writes through to SQLite (sound/music/voice/effects survive restart); root layout hydrates on launch
+- [x] Verified: tsc + eslint clean, android export bundles
+- **Done when:** all shell screens navigable ✓, parent area not accidentally openable ✓, settings survive restart ✓ — **Phase 2 COMPLETE**.
+- **Added deps:** `zustand` (runtime state), `expo-sqlite` (local persistence; native but Expo-Go-bundled, no data leaves device).
+Remaining polish (not blocking Phase 2):
+- [ ] Replace Home "Stickers" temp `/gallery` link once the sticker book exists (Phase 6)
+- [ ] `expo-sqlite` web stub if web is ever targeted (Android-first, so deferred)
+- [ ] Device-verify rendering/scaling (S24)
 
 ## Phase 3 — Audio engine
 - [ ] Audio manager (no overlapping instructions; play/pause/replay/unload; music + voice volume; pause on background; resume)
