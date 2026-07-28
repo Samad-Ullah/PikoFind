@@ -1,10 +1,10 @@
 /**
- * World introduction — Piko introduces the world (by voice, once audio lands in
- * Phase 3). Start / Repeat / Back. The finding game itself is Phase 4, so Start
- * currently shows a friendly "coming soon" note.
+ * World introduction — Piko introduces the world by voice (silent until the
+ * recordings land). Start opens the finding game; Repeat replays the intro;
+ * Back returns to world selection.
  */
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -13,13 +13,19 @@ import { KidButton } from '@/components/KidButton';
 import { PikoMascot } from '@/components/PikoMascot';
 import { BackIcon, ReplayIcon } from '@/components/icons';
 import { getWorld } from '@/content/worlds';
+import { audio } from '@/features/audio';
 import { colors, radius, shadowSm, spacing, typography } from '@/theme';
 
 export default function WorldIntro() {
   const router = useRouter();
   const { worldId } = useLocalSearchParams<{ worldId: string }>();
   const world = getWorld(worldId);
-  const [started, setStarted] = useState(false);
+  const introKey = world ? `${world.id}.intro` : '';
+
+  useEffect(() => {
+    if (introKey) void audio.playVoice(introKey);
+    return () => audio.stopVoice();
+  }, [introKey]);
 
   if (!world) {
     return (
@@ -37,19 +43,20 @@ export default function WorldIntro() {
       </View>
 
       <View style={styles.stage}>
-        <PikoMascot pose={started ? 'celebrating' : 'speaking'} size={190} />
+        <PikoMascot pose="speaking" size={190} />
         <View style={styles.right}>
           <View style={styles.bubble}>
             <Text style={styles.bubbleText}>
-              {started ? 'The finding game is coming very soon! 🎉' : `Welcome to ${world.title}! ${world.blurb} Listen and find with me.`}
+              Welcome to {world.title}! {world.blurb} Listen and find with me.
             </Text>
           </View>
           <View style={styles.actions}>
-            <IconButton label="Repeat" icon={<ReplayIcon />} onPress={() => {}} />
+            <IconButton label="Hear it again" icon={<ReplayIcon />} onPress={() => void audio.playVoice(introKey)} />
             <KidButton
-              label={started ? 'Back' : 'Start'}
-              variant={started ? 'ghost' : 'mint'}
-              onPress={() => (started ? router.back() : setStarted(true))}
+              label="Start"
+              variant="mint"
+              size="play"
+              onPress={() => router.push({ pathname: '/game/[worldId]', params: { worldId: world.id } })}
             />
           </View>
         </View>
