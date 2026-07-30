@@ -21,6 +21,14 @@ export function getDb(): Promise<SQLite.SQLiteDatabase> {
           value TEXT NOT NULL,
           updated_at INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS level_progress (
+          world TEXT NOT NULL,
+          level INTEGER NOT NULL,
+          stars INTEGER NOT NULL DEFAULT 0,
+          completed INTEGER NOT NULL DEFAULT 0,
+          updated_at INTEGER NOT NULL,
+          PRIMARY KEY (world, level)
+        );
       `);
       return db;
     });

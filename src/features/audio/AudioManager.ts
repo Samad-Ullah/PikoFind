@@ -25,6 +25,7 @@ import {
   type AudioPlayer,
   type AudioStatus,
 } from 'expo-audio';
+import * as Speech from 'expo-speech';
 import { AppState, type AppStateStatus } from 'react-native';
 
 import { useSettings } from '@/store/useSettings';
@@ -44,10 +45,14 @@ class AudioManager {
   private settingsUnsub: (() => void) | null = null;
   private appStateSub: Subscription | null = null;
 
-  // Voice channel — a single reused player, source swapped per instruction.
+  // Voice channel — a single reused player (for recordings) + a device-TTS
+  // fallback so Piko talks before any audio is recorded. Only one voice is ever
+  // audible; a token makes stale async callbacks (TTS / playback) no-ops.
   private voicePlayer: AudioPlayer | null = null;
   private voiceStatusSub: Subscription | null = null;
   private voiceResolve: (() => void) | null = null;
+  private voiceToken = 0;
+  private playerToken = 0;
 
   // Music channel — a single looping player.
   private musicPlayer: AudioPlayer | null = null;
@@ -57,8 +62,8 @@ class AudioManager {
   // Feedback sounds — kept loaded, one player per key.
   private sfxPlayers = new Map<SfxKey, AudioPlayer>();
 
-  // Background/resume bookkeeping.
-  private voiceWasPlaying = false;
+  // Best available device TTS voice (chosen once at init); undefined = default.
+  private ttsVoice: string | undefined;
 
   private warnedMissing = new Set<string>();
 
@@ -79,6 +84,23 @@ class AudioManager {
 
     this.settingsUnsub = useSettings.subscribe(() => this.onSettingsChange());
     this.appStateSub = AppState.addEventListener('change', (s) => this.onAppStateChange(s));
+    void this.pickVoice();
+  }
+
+  /** Choose the nicest English voice the device offers (enhanced if available). */
+  private async pickVoice(): Promise<void> {
+    try {
+      const voices = await Speech.getAvailableVoicesAsync();
+      const en = voices.filter((v) => v.language?.toLowerCase().startsWith('en'));
+      const best =
+        en.find((v) => v.quality === Speech.VoiceQuality.Enhanced && v.language?.toLowerCase() === 'en-us') ??
+        en.find((v) => v.quality === Speech.VoiceQuality.Enhanced) ??
+        en.find((v) => v.language?.toLowerCase() === 'en-us') ??
+        en[0];
+      this.ttsVoice = best?.identifier;
+    } catch {
+      this.ttsVoice = undefined; // fall back to the platform default voice
+    }
   }
 
   /** Release every native player. Rarely needed — mainly for tests/teardown. */
@@ -86,7 +108,7 @@ class AudioManager {
     this.settingsUnsub?.();
     this.appStateSub?.remove();
     this.voiceStatusSub?.remove();
-    this.settleVoice();
+    this.stopVoice();
     this.voicePlayer?.remove();
     this.musicPlayer?.remove();
     this.sfxPlayers.forEach((p) => p.remove());
@@ -101,62 +123,96 @@ class AudioManager {
   // --- Voice -----------------------------------------------------------------
 
   /**
-   * Speak one instruction. Resolves when it finishes (or immediately if it is
-   * interrupted by another voice, disabled in settings, or not yet recorded).
+   * Say one line. If a recording exists for `key` it plays; otherwise, when
+   * `fallbackText` is given, the device's text-to-speech says it — so Piko talks
+   * even before any audio is recorded. Resolves when the line finishes, or
+   * immediately if interrupted, disabled, or there's nothing to say.
    */
-  playVoice(key: VoiceKey): Promise<void> {
-    // Interrupting an in-flight instruction counts as finishing it: settle the
-    // previous awaiter first so nothing is left hanging.
-    this.settleVoice();
-
-    const { soundOn, voiceOn } = useSettings.getState();
-    if (!soundOn || !voiceOn) return Promise.resolve();
+  playVoice(key: VoiceKey, fallbackText?: string): Promise<void> {
+    if (!this.beginVoice()) return Promise.resolve();
 
     const source = resolveVoice(key);
-    if (source == null) {
-      this.warnMissing('voice', key);
-      return Promise.resolve();
+    if (source != null) {
+      const token = this.voiceToken;
+      const player = this.ensureVoicePlayer();
+      this.playerToken = token;
+      player.replace(source); // stops the old clip and loads the new at position 0
+      player.volume = VOICE_VOLUME;
+      player.play();
+      this.duckMusic(true);
+      return new Promise<void>((resolve) => {
+        this.voiceResolve = resolve;
+      });
     }
 
-    const player = this.ensureVoicePlayer();
-    player.replace(source); // stops the old clip and loads the new at position 0
-    player.volume = VOICE_VOLUME;
-    player.play();
-    this.duckMusic(true);
-
-    return new Promise<void>((resolve) => {
-      this.voiceResolve = resolve;
-    });
+    if (fallbackText != null && fallbackText.length > 0) {
+      return this.speakText(fallbackText);
+    }
+    this.warnMissing('voice', key);
+    return Promise.resolve();
   }
 
-  /** Replay the current instruction from the start. */
-  replayVoice(): void {
-    if (!this.voicePlayer) return;
-    const { soundOn, voiceOn } = useSettings.getState();
-    if (!soundOn || !voiceOn) return;
-    void this.voicePlayer.seekTo(0);
-    this.voicePlayer.play();
-    this.duckMusic(true);
+  /** Speak arbitrary text via device TTS — e.g. a reaction like "Yahoo!". */
+  speak(text: string): Promise<void> {
+    if (!this.beginVoice()) return Promise.resolve();
+    return this.speakText(text);
   }
 
-  /** Stop the current instruction and settle its awaiter. */
+  /** Stop the current voice (recording or TTS) and settle its awaiter. */
   stopVoice(): void {
+    this.voiceToken += 1;
     this.voicePlayer?.pause();
-    this.settleVoice();
+    Speech.stop();
+    this.endVoice();
   }
 
   private ensureVoicePlayer(): AudioPlayer {
     if (this.voicePlayer) return this.voicePlayer;
     const player = createAudioPlayer(null);
     this.voiceStatusSub = player.addListener('playbackStatusUpdate', (status: AudioStatus) => {
-      if (status.didJustFinish) this.settleVoice();
+      if (status.didJustFinish && this.playerToken === this.voiceToken) this.endVoice();
     });
     this.voicePlayer = player;
     return player;
   }
 
+  /** Speak via device TTS with a cheerful, kid-friendly voice. */
+  private speakText(text: string): Promise<void> {
+    const token = this.voiceToken;
+    this.duckMusic(true);
+    return new Promise<void>((resolve) => {
+      this.voiceResolve = resolve;
+      const done = () => {
+        if (token === this.voiceToken) this.endVoice();
+      };
+      Speech.speak(text, {
+        language: 'en-US',
+        voice: this.ttsVoice,
+        pitch: 1.15,
+        rate: 0.94,
+        onDone: done,
+        onStopped: done,
+        onError: done,
+      });
+    });
+  }
+
+  /**
+   * Interrupt any current voice: bump the token so stale callbacks are ignored,
+   * stop the player + TTS, resolve the previous awaiter. Returns whether voice
+   * is currently enabled in settings.
+   */
+  private beginVoice(): boolean {
+    this.voiceToken += 1;
+    this.voicePlayer?.pause();
+    Speech.stop();
+    this.endVoice();
+    const { soundOn, voiceOn } = useSettings.getState();
+    return soundOn && voiceOn;
+  }
+
   /** Resolve the pending voice promise (if any) and restore music volume. */
-  private settleVoice(): void {
+  private endVoice(): void {
     const resolve = this.voiceResolve;
     this.voiceResolve = null;
     this.duckMusic(false);
@@ -247,23 +303,17 @@ class AudioManager {
 
   private onSettingsChange(): void {
     const { soundOn, voiceOn } = useSettings.getState();
-    if ((!soundOn || !voiceOn) && this.voicePlayer?.playing) {
-      this.stopVoice();
-    }
+    if ((!soundOn || !voiceOn) && this.voiceActive()) this.stopVoice();
     this.reconcileMusic();
   }
 
   private onAppStateChange(next: AppStateStatus): void {
     if (next === 'active') {
-      const { soundOn, voiceOn } = useSettings.getState();
-      if (this.voiceWasPlaying && soundOn && voiceOn) this.voicePlayer?.play();
-      this.voiceWasPlaying = false;
       this.reconcileMusic();
       return;
     }
-    // Backgrounded or inactive: remember what was playing, then pause.
-    this.voiceWasPlaying = this.voicePlayer?.playing ?? false;
-    this.voicePlayer?.pause();
+    // Backgrounded or inactive: stop voice and pause music.
+    this.stopVoice();
     this.musicPlayer?.pause();
   }
 

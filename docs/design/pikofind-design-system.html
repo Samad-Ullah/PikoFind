@@ -274,8 +274,10 @@
     <ellipse class="pk-body" cx="110" cy="132" rx="62" ry="66" fill="#37BFD0"/>
     <ellipse class="pk-belly" cx="110" cy="148" rx="40" ry="46" fill="#D6F5FA"/>
     <!-- feet -->
-    <path d="M96 196 v10 M90 206 h12" stroke-width="5" stroke="#F0685A"/>
-    <path d="M124 196 v10 M118 206 h12" stroke-width="5" stroke="#F0685A"/>
+    <g class="pk-feet">
+      <path d="M96 196 v10 M90 206 h12" stroke-width="5" stroke="#F0685A"/>
+      <path d="M124 196 v10 M118 206 h12" stroke-width="5" stroke="#F0685A"/>
+    </g>
     <!-- right wing (front) -->
     <g class="pk-wing pk-wing-r" style="transform-origin:162px 120px">
       <ellipse cx="162" cy="132" rx="20" ry="36" fill="#FFD84D"/>
@@ -289,29 +291,70 @@
       <path d="M96 26 q-10 -14 -2 -22 q10 6 10 20 Z" fill="#FFD84D"/>
       <path d="M124 26 q10 -14 2 -22 q-10 6 -10 20 Z" fill="#FFD84D"/>
     </g>
-    <!-- cheeks -->
-    <circle cx="80" cy="88" r="10" fill="#FF7A6B" opacity=".38" stroke="none"/>
-    <circle cx="140" cy="88" r="10" fill="#FF7A6B" opacity=".38" stroke="none"/>
+    <!-- brows (shown per mood; hidden by CSS default, not inline) -->
+    <g class="pk-brows" fill="none" stroke="#26324A" stroke-width="4" stroke-linecap="round">
+      <path class="pk-brow-l" d="M80 50 q12 -5 24 -1" style="transform-origin:92px 50px"/>
+      <path class="pk-brow-r" d="M116 49 q12 -4 24 1" style="transform-origin:128px 50px"/>
+    </g>
+    <!-- ears (listening) -->
+    <g class="pk-ears">
+      <ellipse cx="60" cy="76" rx="8" ry="12" fill="#2A9DAD"/>
+      <ellipse cx="160" cy="76" rx="8" ry="12" fill="#2A9DAD"/>
+    </g>
+    <!-- sound waves entering the ears (listening) -->
+    <g class="pk-soundwaves" fill="none" stroke="#43C6E8" stroke-width="4" stroke-linecap="round">
+      <path d="M46 62 q-9 14 0 28"/>
+      <path d="M36 56 q-15 20 0 40"/>
+      <path d="M174 62 q9 14 0 28"/>
+      <path d="M184 56 q15 20 0 40"/>
+    </g>
     <!-- eyes -->
     <g class="pk-eyes">
       <circle cx="92" cy="68" r="17" fill="#fff"/>
       <circle cx="128" cy="68" r="17" fill="#fff"/>
-      <circle class="pk-pupil" cx="94" cy="70" r="8" fill="#26324A" stroke="none"/>
-      <circle class="pk-pupil" cx="130" cy="70" r="8" fill="#26324A" stroke="none"/>
-      <circle cx="90" cy="66" r="3" fill="#fff" stroke="none"/>
-      <circle cx="126" cy="66" r="3" fill="#fff" stroke="none"/>
+      <g class="pk-pupils" style="transform-origin:110px 70px">
+        <circle class="pk-pupil" cx="94" cy="70" r="8" fill="#26324A" stroke="none"/>
+        <circle class="pk-pupil" cx="130" cy="70" r="8" fill="#26324A" stroke="none"/>
+        <circle cx="90" cy="66" r="3" fill="#fff" stroke="none"/>
+        <circle cx="126" cy="66" r="3" fill="#fff" stroke="none"/>
+      </g>
     </g>
-    <g class="pk-lids" style="display:none" fill="none">
+    <!-- happy squint eyes (celebrate / star) -->
+    <g class="pk-eyes-happy" fill="none" stroke="#26324A" stroke-width="5" stroke-linecap="round">
+      <path d="M82 72 q10 -13 20 0"/>
+      <path d="M118 72 q10 -13 20 0"/>
+    </g>
+    <!-- sleeping lids -->
+    <g class="pk-lids" fill="none">
       <path d="M78 68 q14 12 28 0"/>
       <path d="M114 68 q14 12 28 0"/>
     </g>
-    <!-- beak -->
-    <g class="pk-beak-closed">
-      <path d="M97 86 q13 20 26 0 q-13 12 -26 0 Z" fill="#FF7A6B"/>
+    <!-- sweat bead (encourage / thinking) -->
+    <g class="pk-sweat">
+      <path d="M151 56 q6 11 0 17 q-6 -6 0 -17Z" fill="#7FD3E8" stroke="#26324A" stroke-width="2.5"/>
     </g>
-    <g class="pk-beak-open" style="display:none">
-      <path d="M98 84 q12 8 24 0 q-12 6 -24 0 Z" fill="#F0685A"/>
-      <path d="M100 92 q10 12 20 0 q-10 6 -20 0 Z" fill="#FF9A8C"/>
+    <!-- BEAK — clean hooked parrot beak in warm amber-orange, distinct from the teal body & coral tuft. Closed by default. -->
+    <g class="pk-beak-closed">
+      <path d="M90 88 Q110 82 130 88 Q129 100 119 106 Q110 111 101 106 Q91 100 90 88 Z" fill="#F79A2E"/>
+      <path d="M99 99 Q110 103 121 99" fill="none" stroke="#B4600F" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="103" cy="92" rx="2" ry="1.6" fill="#8A4A0C" stroke="none"/>
+      <ellipse cx="117" cy="92" rx="2" ry="1.6" fill="#8A4A0C" stroke="none"/>
+    </g>
+    <!-- open beak: upper mandible + dark mouth + tongue + dropped lower mandible -->
+    <g class="pk-beak-open">
+      <path d="M90 88 Q110 83 130 88 Q128 97 110 99 Q92 97 90 88 Z" fill="#F79A2E"/>
+      <path d="M95 97 Q110 94 125 97 Q121 106 110 107 Q99 106 95 97 Z" fill="#7A2E28"/>
+      <ellipse cx="110" cy="102" rx="6" ry="3.2" fill="#F0685A" stroke="none"/>
+      <path d="M96 105 Q110 109 124 105 Q120 115 110 116 Q100 115 96 105 Z" fill="#E07E22"/>
+      <ellipse cx="103" cy="90" rx="2" ry="1.6" fill="#8A4A0C" stroke="none"/>
+      <ellipse cx="117" cy="90" rx="2" ry="1.6" fill="#8A4A0C" stroke="none"/>
+    </g>
+    <!-- presented star (holding-a-star pose): held aloft with a soft glow + sparkles -->
+    <g class="pk-heldstar">
+      <circle cx="182" cy="48" r="30" fill="#FFD84D" opacity=".22" stroke="none"/>
+      <g transform="translate(160,26) scale(0.44)"><use href="#o-star"/></g>
+      <path d="M150 30 l2.4 6 6 2.4 -6 2.4 -2.4 6 -2.4 -6 -6 -2.4 6 -2.4Z" fill="#FFF3B0" stroke="#26324A" stroke-width="1.6"/>
+      <path d="M206 70 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2Z" fill="#FFF3B0" stroke="#26324A" stroke-width="1.6"/>
     </g>
   </g>
 </svg>
@@ -735,12 +778,12 @@
   var poses = [
     {m:'pk-idle', label:'Idle'},
     {m:'pk-speaking', label:'Speaking'},
-    {m:'pk-listening', label:'Listening', decor:'<span class="decor" style="right:10%;top:16%"><svg width="18" height="18" style="color:var(--sky)"><use href="#i-ear"/></svg></span>'},
-    {m:'pk-pointing', label:'Pointing'},
+    {m:'pk-listening', label:'Listening'},
+    {m:'pk-pointing', label:'Pointing', decor:'<span class="decor" style="right:7%;top:30%;color:var(--yellow);font-size:22px;filter:drop-shadow(0 2px 0 var(--navy))">✦</span>'},
     {m:'pk-celebrate', label:'Celebrating', decor:'<span class="decor" style="left:12%;top:14%;font-size:16px">✦</span><span class="decor" style="right:14%;top:22%;font-size:12px">✦</span>'},
-    {m:'pk-thinking', label:'Thinking', decor:'<span class="decor" style="right:14%;top:18%;font-size:16px">…</span>'},
+    {m:'pk-thinking', label:'Thinking', decor:'<span class="decor" style="right:6%;top:5%;width:32px;height:32px;border:3px solid var(--navy);border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:var(--navy);font-size:17px">?</span><span class="decor" style="right:21%;top:25%;width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid var(--navy)"></span>'},
     {m:'pk-encourage', label:'Encouraging', decor:'<span class="decor" style="right:14%;top:18%"><svg width="16" height="16" style="color:var(--coral)"><use href="#i-heartmini"/></svg></span>'},
-    {m:'pk-flying', label:'Flying'},
+    {m:'pk-flying', label:'Flying', decor:'<span class="decor" style="left:5%;top:34%;color:var(--sky);font-size:20px;font-weight:900">››</span><span class="decor" style="left:9%;top:52%;color:var(--sky);font-size:14px;font-weight:900">›</span>'},
     {m:'pk-star', label:'Holding a star'},
     {m:'pk-sleeping', label:'Sleeping', decor:'<span class="decor" style="right:12%;top:16%;font-size:14px">z<small style="font-size:9px">z</small></span>'}
   ];
@@ -750,11 +793,6 @@
     tile.className = 'pose';
     tile.appendChild(makePiko([p.m]));
     if(p.decor){ tile.insertAdjacentHTML('beforeend', p.decor); }
-    if(p.m==='pk-star'){
-      var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      s.setAttribute('viewBox','0 0 100 100'); s.style.cssText='position:absolute;width:34%;left:50%;bottom:16%;transform:translateX(-50%);z-index:3';
-      s.innerHTML='<use href="#o-star"/>'; tile.appendChild(s);
-    }
     tile.insertAdjacentHTML('beforeend','<span class="plabel">'+p.label+'</span>');
     grid.appendChild(tile);
   });
@@ -762,22 +800,82 @@
 </script>
 
 <style>
-  /* pose modifiers — one shape, simple transforms */
-  .pk-wing{transition:transform .3s}
-  .pk-speaking .pk-beak-closed,.pk-celebrate .pk-beak-closed,.pk-flying .pk-beak-closed{display:none}
-  .pk-speaking .pk-beak-open,.pk-celebrate .pk-beak-open,.pk-flying .pk-beak-open{display:block}
-  .pk-listening .pk-root{transform:rotate(7deg); transform-origin:110px 120px}
-  .pk-pointing .pk-wing-r{transform:rotate(-46deg)}
-  .pk-celebrate .pk-wing-r{transform:rotate(-58deg)}
-  .pk-celebrate .pk-wing-l{transform:rotate(58deg)}
-  .pk-flying .pk-wing-r{transform:rotate(-78deg) translateY(-6px)}
-  .pk-flying .pk-wing-l{transform:rotate(78deg) translateY(-6px)}
-  .pk-thinking .pk-wing-r{transform:rotate(-30deg) translate(-6px,-18px)}
-  .pk-encourage .pk-wing-r{transform:rotate(-20deg)}
-  .pk-star .pk-wing-r{transform:rotate(-30deg)} .pk-star .pk-wing-l{transform:rotate(30deg)}
+  /* pose modifiers — one shape, simple transforms + a few toggled parts.
+     Each state changes the FACE (gaze, brows, eye shape, beak) and posture,
+     not just a wing angle — so every Piko reads as a different feeling. */
+  .pk-wing,.pk-root,.pk-pupils,.pk-brows,.pk-tuft,.pk-feet,.pk-beak-open{transition:transform .3s ease}
+
+  /* mood-only parts: hidden by default HERE (a stylesheet rule, so the
+     compound pose selectors below can reveal them; an inline display:none
+     could not be overridden without !important) */
+  .pk-beak-open,.pk-eyes-happy,.pk-brows,.pk-lids,.pk-sweat,.pk-ears,.pk-soundwaves,.pk-heldstar{display:none}
+
+  /* open beak while talking / cheering / pointing / flying */
+  .pk-speaking .pk-beak-closed,.pk-celebrate .pk-beak-closed,.pk-flying .pk-beak-closed,.pk-pointing .pk-beak-closed{display:none}
+  .pk-speaking .pk-beak-open,.pk-celebrate .pk-beak-open,.pk-flying .pk-beak-open,.pk-pointing .pk-beak-open{display:block}
+
+  /* SPEAKING — leans in, one wing gestures, mouth a touch wider */
+  .pk-speaking .pk-root{transform:rotate(-2deg); transform-origin:110px 200px}
+  .pk-speaking .pk-wing-r{transform:rotate(-26deg)}
+  .pk-speaking .pk-beak-open{transform:translateY(1px) scale(1.06); transform-origin:110px 88px}
+
+  /* LISTENING — head cocked, wing cupped like an ear, gaze toward the sound */
+  .pk-listening .pk-root{transform:rotate(8deg); transform-origin:110px 200px}
+  .pk-listening .pk-wing-r{transform:rotate(-54deg) translate(4px,-8px)}
+  .pk-listening .pk-pupils{transform:translate(5px,-1px)}
+  .pk-listening .pk-brows{display:block}
+  .pk-listening .pk-brow-r{transform:translateY(-4px)}
+  .pk-listening .pk-ears{display:block}
+  .pk-listening .pk-soundwaves{display:block}
+
+  /* POINTING — arm thrown out, eyes follow the point, alert brows, "look!" */
+  .pk-pointing .pk-wing-r{transform:rotate(-60deg) translate(6px,4px)}
+  .pk-pointing .pk-pupils{transform:translate(7px,-3px)}
+  .pk-pointing .pk-brows{display:block; transform:translateY(-3px)}
+
+  /* CELEBRATING — stretches up, wings high, happy squint, big grin, tuft pops */
+  .pk-celebrate .pk-root{transform:translateY(-6px) scale(1.04); transform-origin:110px 200px}
+  .pk-celebrate .pk-wing-r{transform:rotate(-64deg) translateY(-6px)}
+  .pk-celebrate .pk-wing-l{transform:rotate(64deg) translateY(-6px)}
+  .pk-celebrate .pk-eyes{display:none}
+  .pk-celebrate .pk-eyes-happy{display:block}
+  .pk-celebrate .pk-beak-open{transform:translateY(3px) scale(1.28); transform-origin:110px 88px}
+  .pk-celebrate .pk-tuft{transform:translateY(-3px) rotate(-5deg); transform-origin:110px 24px}
+
+  /* THINKING — wing to chin, gaze drifts up, one brow raised, a pondering bead */
+  .pk-thinking .pk-wing-r{transform:rotate(-12deg) translate(-18px,-30px)}
+  .pk-thinking .pk-pupils{transform:translate(-4px,-6px)}
+  .pk-thinking .pk-brows{display:block}
+  .pk-thinking .pk-brow-r{transform:translateY(-6px) rotate(-7deg)}
+  .pk-thinking .pk-sweat{display:block}
+
+  /* ENCOURAGING — gentle cock toward you, open reaching wing, kind worried brows */
+  .pk-encourage .pk-root{transform:rotate(-5deg); transform-origin:110px 200px}
+  .pk-encourage .pk-wing-r{transform:rotate(-30deg) translate(8px,6px)}
+  .pk-encourage .pk-pupils{transform:translate(2px,1px)}
+  .pk-encourage .pk-brows{display:block}
+  .pk-encourage .pk-brow-l{transform:rotate(7deg)}
+  .pk-encourage .pk-brow-r{transform:rotate(-7deg)}
+
+  /* FLYING — lifts off, wings wide, gaze forward, feet tuck */
+  .pk-flying .pk-root{transform:translateY(-10px) rotate(-3deg); transform-origin:110px 160px}
+  .pk-flying .pk-wing-r{transform:rotate(-104deg) translateY(-2px)}
+  .pk-flying .pk-wing-l{transform:rotate(104deg) translateY(-2px)}
+  .pk-flying .pk-pupils{transform:translate(2px,-3px)}
+  .pk-flying .pk-feet{transform:translateY(-4px)}
+
+  /* HOLDING A STAR — wings cradle it low, proud happy squint */
+  .pk-star .pk-wing-r{transform:rotate(-128deg)}
+  .pk-star .pk-eyes{display:none}
+  .pk-star .pk-eyes-happy{display:block}
+  .pk-star .pk-heldstar{display:block}
+
+  /* SLEEPING — slumps, eyes shut, tuft droops */
   .pk-sleeping .pk-eyes{display:none} .pk-sleeping .pk-lids{display:block !important}
-  .pk-sleeping .pk-root{transform:rotate(4deg); transform-origin:110px 120px}
+  .pk-sleeping .pk-root{transform:rotate(5deg) translateY(3px); transform-origin:110px 200px}
+  .pk-sleeping .pk-tuft{transform:rotate(7deg) translateX(2px); transform-origin:110px 24px}
+
   @media (prefers-reduced-motion:no-preference){
-    .pose:hover .pk-wing-r{transform:rotate(-40deg)}
+    .pose:hover .pk-tuft{transform:translateY(-3px)}
   }
 </style>
