@@ -8,11 +8,11 @@
  * pulses (`highlighted`) to guide the child. Generous `hitSlop` keeps taps easy.
  */
 import { useEffect, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 
 import type { PlaceholderShape, SceneObject } from '@/content/types';
-import { colors, radius, typography } from '@/theme';
+import { colors, radius } from '@/theme';
 
 export interface SceneObjectViewProps {
   object: SceneObject;
@@ -25,11 +25,17 @@ export interface SceneObjectViewProps {
   highlighted?: boolean;
 }
 
+/** Shapes drawn as an SVG polygon (0..100 viewBox); others are plain Views. */
+const POLYGON_POINTS: Partial<Record<PlaceholderShape, string>> = {
+  triangle: '50,10 92,90 8,90',
+  star: '50,6 61,38 95,38 67,58 78,92 50,71 22,92 33,58 5,38 39,38',
+};
+
 function borderRadiusFor(shape: PlaceholderShape): number | undefined {
   if (shape === 'circle') return 999;
   if (shape === 'rounded') return radius.lg;
   if (shape === 'square') return radius.sm;
-  return undefined; // triangle draws its own outline
+  return undefined; // polygon shapes draw their own outline
 }
 
 export function SceneObjectView({ object, onPress, disabled, wiggle, highlighted }: SceneObjectViewProps) {
@@ -69,24 +75,26 @@ export function SceneObjectView({ object, onPress, disabled, wiggle, highlighted
       <Pressable
         onPress={() => onPress(object.id)}
         disabled={disabled}
-        hitSlop={12}
+        hitSlop={20}
         accessibilityRole="button"
         accessibilityLabel={object.label}
         style={styles.press}
       >
+        <View style={styles.shadow} pointerEvents="none" />
         <View style={styles.shapeBox}>
-          {object.shape === 'triangle' ? (
+          {POLYGON_POINTS[object.shape] ? (
             <Svg width="100%" height="100%" viewBox="0 0 100 100">
-              <Polygon points="50,10 92,90 8,90" fill={object.color} stroke={colors.outline} strokeWidth={6} strokeLinejoin="round" />
+              <Polygon
+                points={POLYGON_POINTS[object.shape]}
+                fill={object.color}
+                stroke={colors.outline}
+                strokeWidth={6}
+                strokeLinejoin="round"
+              />
             </Svg>
           ) : (
             <View style={[styles.solid, { backgroundColor: object.color, borderRadius: br }]} />
           )}
-        </View>
-        <View style={styles.caption}>
-          <Text style={styles.captionText} numberOfLines={1}>
-            {object.label}
-          </Text>
         </View>
       </Pressable>
     </Animated.View>
@@ -102,13 +110,14 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: colors.outline,
   },
-  caption: {
-    marginTop: 4,
-    backgroundColor: colors.softWhite,
-    borderRadius: radius.pill,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    opacity: 0.92,
+  // Soft contact shadow so objects look placed on the floor, not floating.
+  shadow: {
+    position: 'absolute',
+    left: '16%',
+    right: '16%',
+    bottom: -6,
+    height: 12,
+    borderRadius: 999,
+    backgroundColor: 'rgba(38,50,74,0.16)',
   },
-  captionText: { ...typography.caption, color: colors.textSoft },
 });

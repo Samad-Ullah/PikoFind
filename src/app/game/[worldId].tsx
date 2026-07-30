@@ -1,13 +1,12 @@
 /**
- * Game screen (master plan §12.6) — the finding game. A full-screen scene of
- * tappable objects, Piko's spoken instruction with a replay button, a
- * five-step progress indicator and a sound toggle. No scores, timers, ads or
- * settings in the child's view.
+ * Game screen (master plan §12.6) — plays ONE level: its 10 find-it questions.
+ * Full-screen scene of tappable objects, Piko's spoken instruction + replay, a
+ * progress indicator, a sound toggle. No scores, timers, ads or settings here.
  *
- * All game logic lives in the `useGameSession` store; this screen reacts to its
- * `phase` to drive audio (via the engine), Piko's pose, feedback animations and
- * the short pauses between challenges. Feedback is always kind: a wrong tap
- * wiggles the object and Piko says "Good try", never a penalty.
+ * All game logic lives in `useGameSession`; this screen reacts to `phase` to
+ * drive audio (via the engine), Piko's pose + spoken reactions, feedback
+ * animations and the short pauses between questions. On completion it saves the
+ * level result (stars) and returns to the level map. Feedback stays kind.
  */
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo } from 'react';
@@ -19,99 +18,113 @@ import { KidButton } from '@/components/KidButton';
 import { PikoMascot, type PikoPose } from '@/components/PikoMascot';
 import { ProgressDots } from '@/components/ProgressDots';
 import { ResponsiveScene, SceneItem } from '@/components/ResponsiveScene';
+import { SceneBackdrop } from '@/components/SceneBackdrop';
 import { SceneObjectView } from '@/components/SceneObjectView';
 import { BackIcon, ReplayIcon, SoundIcon, SoundOffIcon } from '@/components/icons';
-import { getLevels } from '@/content/levels';
+import { getChallenges } from '@/content/levels';
 import { getWorld } from '@/content/worlds';
 import { audio } from '@/features/audio';
-import { currentLevel, useGameSession } from '@/game/useGameSession';
+import { computeStars, currentChallenge, useGameSession } from '@/game/useGameSession';
+import { useProgress } from '@/store/useProgress';
 import { useSettings } from '@/store/useSettings';
 import { colors, radius, shadowSm, spacing, typography } from '@/theme';
 
-/** Encouragement phrase played on a wrong tap (silent until recorded). */
-const TRY_AGAIN_VOICE = 'feedback.try-again';
+/** Piko's spoken reactions (device TTS until real recordings exist). */
+const CORRECT_CHEERS = ['Yahoo!', 'Woohoo!', 'You did it!', 'Hooray!'];
+const WRONG_NUDGES = ['Ohh! Try again.', 'Oops! Look again.', 'Almost! Try again.'];
+
+/** Per-question rug tint so each scene looks a little different. */
+const RUG_TINTS = [colors.skyBlue, colors.mintGreen, colors.coral, colors.playfulPurple, colors.sunshineYellow];
 
 function pikoPoseFor(phase: string): PikoPose {
   if (phase === 'correct') return 'celebrating';
-  if (phase === 'incorrect') return 'encouraging';
+  if (phase === 'incorrect') return 'sad';
   if (phase === 'instruction') return 'speaking';
   return 'pointing';
 }
 
 export default function GameScreen() {
   const router = useRouter();
-  const { worldId } = useLocalSearchParams<{ worldId: string }>();
-  const world = getWorld(worldId);
-  const levels = useMemo(() => (world ? getLevels(world.id) : []), [world]);
-  const hasContent = levels.length > 0;
+  const params = useLocalSearchParams<{ worldId: string; level?: string }>();
+  const world = getWorld(params.worldId);
+  const levelNum = Math.max(1, Number(params.level) || 1);
+  const challenges = useMemo(() => (world ? getChallenges(world.id, levelNum) : []), [world, levelNum]);
+  const hasContent = challenges.length > 0;
 
   const session = useGameSession();
   const soundOn = useSettings((s) => s.soundOn);
   const toggleSound = useSettings((s) => s.toggleSound);
-  const level = currentLevel(session);
+  const challenge = currentChallenge(session);
   const { phase, index, attempts, lastWrongId, highlightTarget, repeatToken } = session;
 
-  // Start / tear down the session.
+  // Start / tear down the level.
   useEffect(() => {
     if (!world || !hasContent) return;
-    useGameSession.getState().start(world.id, levels);
+    useGameSession.getState().start(world.id, levelNum, challenges);
     audio.playMusic(world.id);
     return () => {
       audio.stopMusic();
       audio.stopVoice();
+      useGameSession.getState().reset();
     };
-  }, [world, hasContent, levels]);
+  }, [world, hasContent, challenges, levelNum]);
 
-  // Speak the instruction, then open the level for tapping.
+  // Speak the instruction, then open the question for tapping.
   useEffect(() => {
-    if (phase !== 'instruction' || !level) return;
+    if (phase !== 'instruction' || !challenge) return;
     let active = true;
-    void audio.playVoice(level.instructionAudioKey).then(() => {
+    void audio.playVoice(challenge.instructionAudioKey, challenge.instructionText).then(() => {
       if (active) useGameSession.getState().instructionDone();
     });
     return () => {
       active = false;
     };
-  }, [phase, level]);
+  }, [phase, challenge]);
 
   // Assistance auto-repeat of the instruction.
   useEffect(() => {
-    if (repeatToken > 0 && level) void audio.playVoice(level.instructionAudioKey);
-  }, [repeatToken, level]);
+    if (repeatToken > 0 && challenge) void audio.playVoice(challenge.instructionAudioKey, challenge.instructionText);
+  }, [repeatToken, challenge]);
 
-  // Correct: celebrate, then advance after a short pause.
+  // Correct: Piko cheers out loud, then advance after a short pause.
   useEffect(() => {
     if (phase !== 'correct') return;
     audio.playSfx('correct');
-    const t = setTimeout(() => useGameSession.getState().resolveCorrect(), 1300);
+    void audio.speak(CORRECT_CHEERS[index % CORRECT_CHEERS.length]);
+    const t = setTimeout(() => useGameSession.getState().resolveCorrect(), 1500);
     return () => clearTimeout(t);
   }, [phase, index]);
 
-  // Incorrect: soft sound + "good try", then reopen the level.
+  // Incorrect: a gentle "ohh, try again" (never shaming), then reopen.
   useEffect(() => {
     if (phase !== 'incorrect') return;
     audio.playSfx('wrong');
-    void audio.playVoice(TRY_AGAIN_VOICE);
-    const t = setTimeout(() => useGameSession.getState().resolveIncorrect(), 1100);
+    void audio.speak(WRONG_NUDGES[attempts % WRONG_NUDGES.length]);
+    const t = setTimeout(() => useGameSession.getState().resolveIncorrect(), 1300);
     return () => clearTimeout(t);
   }, [phase, attempts]);
 
-  // Session finished → results.
+  // Level finished → save stars, then show results. Guard against a stale
+  // 'complete' left over from a previous level (only act on THIS level's run).
   useEffect(() => {
-    if (phase !== 'complete') return;
+    if (phase !== 'complete' || !world) return;
+    const st = useGameSession.getState();
+    if (st.level !== levelNum || st.challenges.length === 0) return;
+    const stars = computeStars(st.correctCount, st.totalAttempts);
+    void useProgress.getState().recordResult(world.id, levelNum, stars);
     audio.stopMusic();
-    router.replace('/results');
-  }, [phase, router]);
+    router.replace({ pathname: '/results', params: { worldId: world.id, level: String(levelNum), stars: String(stars) } });
+  }, [phase, world, levelNum, router]);
 
   const exit = () => {
     audio.stopMusic();
     audio.stopVoice();
-    useGameSession.getState().reset();
-    router.replace('/worlds');
+    if (world) router.replace({ pathname: '/world/[worldId]', params: { worldId: world.id } });
+    else router.replace('/worlds');
   };
 
   const replay = () => {
-    if (level) void audio.playVoice(level.instructionAudioKey);
+    if (challenge) void audio.playVoice(challenge.instructionAudioKey, challenge.instructionText);
   };
 
   if (!world) {
@@ -127,8 +140,8 @@ export default function GameScreen() {
     return (
       <SafeAreaView style={[styles.centered, { backgroundColor: world.ground }]}>
         <PikoMascot pose="thinking" size={150} />
-        <Text style={styles.notice}>This world’s games are coming very soon! 🎉</Text>
-        <KidButton label="Back" variant="mint" onPress={() => router.replace('/worlds')} />
+        <Text style={styles.notice}>This level is coming very soon! 🎉</Text>
+        <KidButton label="Back" variant="mint" onPress={exit} />
       </SafeAreaView>
     );
   }
@@ -139,7 +152,12 @@ export default function GameScreen() {
     <SafeAreaView style={[styles.safe, { backgroundColor: world.ground }]} edges={['top', 'left', 'right', 'bottom']}>
       <View style={styles.header}>
         <IconButton label="Leave game" icon={<BackIcon />} onPress={exit} />
-        <ProgressDots total={levels.length} current={index} />
+        <View style={styles.progress}>
+          <Text style={styles.levelLabel}>
+            Level {levelNum} · {index + 1}/{challenges.length}
+          </Text>
+          <ProgressDots total={challenges.length} current={index} size={14} />
+        </View>
         <IconButton
           label={soundOn ? 'Turn sound off' : 'Turn sound on'}
           icon={soundOn ? <SoundIcon /> : <SoundOffIcon />}
@@ -148,24 +166,25 @@ export default function GameScreen() {
       </View>
 
       <View style={styles.instruction}>
-        <PikoMascot pose={pikoPoseFor(phase)} size={96} />
+        <PikoMascot pose={pikoPoseFor(phase)} size={92} />
         <View style={styles.bubble}>
           <Text style={styles.bubbleText} numberOfLines={2}>
-            {level?.instructionText}
+            {challenge?.instructionText}
           </Text>
         </View>
         <IconButton label="Hear it again" icon={<ReplayIcon />} onPress={replay} />
       </View>
 
       <ResponsiveScene backgroundColor={world.ground}>
-        {level?.objects.map((obj) => (
+        <SceneBackdrop floor="#F3E1BE" rug={RUG_TINTS[index % RUG_TINTS.length]} />
+        {challenge?.objects.map((obj) => (
           <SceneItem key={obj.id} x={obj.x} y={obj.y} width={obj.width}>
             <SceneObjectView
               object={obj}
               onPress={(id) => useGameSession.getState().tap(id)}
               disabled={!canTap}
               wiggle={phase === 'incorrect' && lastWrongId === obj.id}
-              highlighted={highlightTarget && canTap && level.targetObjectIds.includes(obj.id)}
+              highlighted={highlightTarget && canTap && challenge.targetObjectIds.includes(obj.id)}
             />
           </SceneItem>
         ))}
@@ -179,6 +198,8 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.lg, backgroundColor: colors.warmCream, padding: spacing.xl },
   notice: { ...typography.title, color: colors.darkNavy, textAlign: 'center' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  progress: { alignItems: 'center', gap: spacing.xs },
+  levelLabel: { ...typography.caption, color: colors.darkNavy },
   instruction: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xs },
   bubble: {
     flex: 1,
